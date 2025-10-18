@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "age": 28,
+    "email": "john.doe@example.com",
+    "phone": "+1234567890",
+    "address": "123 Main Street, Cityville",
+    "isActive": true,
+    "role": "Developer",
+    "department": "Engineering",
+    "joinDate": "2023-01-15"
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "age": 32,
+    "email": "jane.smith@example.com",
+    "phone": "+1234567891",
+    "address": "456 Elm Street, Townsville",
+    "isActive": false,
+    "role": "Designer",
+    "department": "Creative",
+    "joinDate": "2022-08-10"
+  },
+  {
+    "id": 3,
+    "name": "Alice Johnson",
+    "age": 25,
+    "email": "alice.johnson@example.com",
+    "phone": "+1234567892",
+    "address": "789 Oak Avenue, Villageville",
+    "isActive": true,
+    "role": "Product Manager",
+    "department": "Product",
+    "joinDate": "2024-05-20"
+  }
+]
