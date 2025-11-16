@@ -21,7 +21,7 @@ exports.getUser = (req, res) => {
     }
     );
 }
-
+ 
 exports.updateUser = (req, res) => {
     res.status(500).json({
         status: "200",

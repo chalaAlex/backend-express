@@ -1,0 +1,163 @@
+[
+  {
+    "name": "The Forest test",
+    "duration": 5,
+    "maxGroupSize": 15,
+    "difficulty": "medium",
+    "ratingAverage": 4.8,
+    "ratingsQuantit": 37,
+    "price": 497,
+    "priceDiscount": 50,
+    "summary": "Breathtaking hike through the Canadian wilderness.",
+    "description": "Spend 7 days exploring remote forests and camping under the stars with our experienced guides. Perfect for those seeking adventure and solitude.",
+    "imageCover": "forest-hiker-cover.jpg",
+    "image": [
+      "forest-hiker-1.jpg",
+      "forest-hiker-2.jpg",
+      "forest-hiker-3.jpg"
+    ],
+    "startDates": [
+      "2025-06-19",
+      "2025-07-15",
+      "2025-09-01"
+    ]
+  },
+  {
+    "name": "The Forest Hikerr",
+    "duration": 7,
+    "maxGroupSize": 15,
+    "difficulty": "medium",
+    "ratingAverage": 4.8,
+    "ratingsQuantit": 37,
+    "price": 497,
+    "priceDiscount": 50,
+    "summary": "Breathtaking hike through the Canadian wilderness.",
+    "description": "Spend 7 days exploring remote forests and camping under the stars with our experienced guides. Perfect for those seeking adventure and solitude.",
+    "imageCover": "forest-hiker-cover.jpg",
+    "image": [
+      "forest-hiker-1.jpg",
+      "forest-hiker-2.jpg",
+      "forest-hiker-3.jpg"
+    ],
+    "startDates": [
+      "2025-06-19",
+      "2025-07-15",
+      "2025-09-01"
+    ]
+  },
+  {
+    "name": "The Forest Hiker test",
+    "duration": 8,
+    "maxGroupSize": 15,
+    "difficulty": "medium",
+    "ratingAverage": 4.8,
+    "ratingsQuantit": 37,
+    "price": 497,
+    "priceDiscount": 50,
+    "summary": "Breathtaking hike through the Canadian wilderness.",
+    "description": "Spend 7 days exploring remote forests and camping under the stars with our experienced guides. Perfect for those seeking adventure and solitude.",
+    "imageCover": "forest-hiker-cover.jpg",
+    "image": [
+      "forest-hiker-1.jpg",
+      "forest-hiker-2.jpg",
+      "forest-hiker-3.jpg"
+    ],
+    "startDates": [
+      "2025-06-19",
+      "2025-07-15",
+      "2025-09-01"
+    ]
+  },
+  {
+    "name": "The Forest Hiker hiker test",
+    "duration": 9,
+    "maxGroupSize": 15,
+    "difficulty": "medium",
+    "ratingAverage": 4.8,
+    "ratingsQuantit": 37,
+    "price": 497,
+    "priceDiscount": 50,
+    "summary": "Breathtaking hike through the Canadian wilderness.",
+    "description": "Spend 7 days exploring remote forests and camping under the stars with our experienced guides. Perfect for those seeking adventure and solitude.",
+    "imageCover": "forest-hiker-cover.jpg",
+    "image": [
+      "forest-hiker-1.jpg",
+      "forest-hiker-2.jpg",
+      "forest-hiker-3.jpg"
+    ],
+    "startDates": [
+      "2025-06-19",
+      "2025-07-15",
+      "2025-09-01"
+    ]
+  },
+  {
+    "name": "The Forest Hi",
+    "duration": 10,
+    "maxGroupSize": 15,
+    "difficulty": "medium",
+    "ratingAverage": 4.8,
+    "ratingsQuantit": 37,
+    "price": 497,
+    "priceDiscount": 50,
+    "summary": "Breathtaking hike through the Canadian wilderness.",
+    "description": "Spend 7 days exploring remote forests and camping under the stars with our experienced guides. Perfect for those seeking adventure and solitude.",
+    "imageCover": "forest-hiker-cover.jpg",
+    "image": [
+      "forest-hiker-1.jpg",
+      "forest-hiker-2.jpg",
+      "forest-hiker-3.jpg"
+    ],
+    "startDates": [
+      "2025-06-19",
+      "2025-07-15",
+      "2025-09-01"
+    ]
+  },
+  {
+    "name": "The Forest Huu",
+    "duration": 11,
+    "maxGroupSize": 15,
+    "difficulty": "medium",
+    "ratingAverage": 4.8,
+    "ratingsQuantit": 37,
+    "price": 497,
+    "priceDiscount": 50,
+    "summary": "Breathtaking hike through the Canadian wilderness.",
+    "description": "Spend 7 days exploring remote forests and camping under the stars with our experienced guides. Perfect for those seeking adventure and solitude.",
+    "imageCover": "forest-hiker-cover.jpg",
+    "image": [
+      "forest-hiker-1.jpg",
+      "forest-hiker-2.jpg",
+      "forest-hiker-3.jpg"
+    ],
+    "startDates": [
+      "2025-06-19",
+      "2025-07-15",
+      "2025-09-01"
+    ]
+  },
+  {
+    "name": "The garbase",
+    "duration": 12,
+    "maxGroupSize": 15,
+    "difficulty": "easy",
+    "ratingAverage": 4.8,
+    "ratingsQuantit": 37,
+    "price": 497,
+    "priceDiscount": 50,
+    "summary": "Breathtaking hike through the Canadian wilderness.",
+    "description": "Spend 7 days exploring remote forests and camping under the stars with our experienced guides. Perfect for those seeking adventure and solitude.",
+    "imageCover": "forest-hiker-cover.jpg",
+    "image": [
+      "forest-hiker-1.jpg",
+      "forest-hiker-2.jpg",
+      "forest-hiker-3.jpg"
+    ],
+    "startDates": [
+      "2025-06-19",
+      "2025-07-15",
+      "2025-09-01"
+    ]
+  }
+]

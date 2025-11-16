@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "name": "Fitse",
+        "category": "Electorincs",
+        "rate": "4.5",
+        "review": "The product is good enough"
+    },
+    {
+        "id": 2,
+        "name": "Nati",
+        "category": "Cloths",
+        "rate": "4.5",
+        "review": "Cool cloth"
+    }
+]
