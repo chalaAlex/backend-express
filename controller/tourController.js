@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Tour = require('./../model/tourModel');
 
-// Tour route handler 
+// Tour route handler
 exports.getAllTour = async (req, res) => {
     try {
         const queryObj = { ...req.query };
