@@ -8,4 +8,4 @@ const getProducts = (req, res) => {
     const id = req.params.id * 1;
 
     // const 
-}
+}   

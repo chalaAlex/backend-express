@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 const dotenv = require('dotenv');
 const app = require('./app');
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './config.env'});
 
-// -------------------- Connect to Remote Hosted DataBase --------------------------
+// // -------------------- Connect to Remote Hosted DataBase ---------------------- // 
 // const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 
 // mongoose.connect(DB, {
@@ -12,7 +12,7 @@ dotenv.config({ path: './config.env' });
 //     console.log("ERROR: " + err);
 // });
 
-// --------------------- Connect to Local DataBase ----------------------------------
+// --------------------- Connect to Local DataBase --------------------------------- // 
 mongoose.connect(process.env.DATABASE_LOCAL, {
 }).then(() => console.log('Local database connection successfull!')).catch(err => {
     console.log("ERROR: " + err);

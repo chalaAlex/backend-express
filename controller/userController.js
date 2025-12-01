@@ -27,7 +27,7 @@ exports.updateUser = (req, res) => {
         status: "200",
         message: "The route is not implemented yet!"
     }
-    )
+    );
 }
 
 exports.deleteUser = (req, res) => {

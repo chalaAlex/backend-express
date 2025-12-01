@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// ---------------- Schema --------------
+// ---------------- Schema -------------- //
 const tourSchema = mongoose.Schema({
     name: {
         type: String,
