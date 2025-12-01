@@ -5,23 +5,35 @@ const { match } = require("assert");
 // Tour route handler
 exports.getAllTour = async (req, res) => {
   try {
-    // Filtering
+    let sortBy = {};
+    // --- FILTERING --- //
     const queryObj = { ...req.query };
     const execludeFields = ["page", "sort", "limit", "fields"];
     execludeFields.forEach((el) => delete queryObj[el]);
 
-    // Advanced filtering
+    // // --- ADVANCED FILTERING --- //
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    console.log("////// " + queryStr);
-    // const tours = await Tour.find().where('duration').equals(12).where('difficulty').equals('easy');
-    const query = Tour.find(queryObj);
-    // const query = Tour.find({duration: {$gt: 5}});
 
+    const query = Tour.find(JSON.parse(queryStr));
 
+    // --- SORTING --- //
+    if (req.query.sort) {
+      const fields = req.query.sort.split(",");
+      fields.forEach((field) => {
+        if (field.startsWith("-")) {
+          sortBy[field.substring(1)] = -1; // descending
+        } else {
+          sortBy[field] = 1; // ascending
+        }
+      });
+    } else {
+      sortBy = { createdAt: -1 }; // default sort
+      console.log("no sort fields");
+    }
 
+    query.sort(sortBy);
     const tours = await query;
-    console.log(tours)
 
     res.status(200).json({
       status: "200",
@@ -32,6 +44,7 @@ exports.getAllTour = async (req, res) => {
       },
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({
       status: "400",
       message: "Invalid",

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
 const dotenv = require('dotenv');
-const Tour = require('./../../model/internModel');
-const Intern = require('./../../model/internModel');
+const Tour = require('./../../model/tourModel');
+// const Intern = require('./../../model/internModel');
 dotenv.config({ path: '../../config.env' });
 
 mongoose.connect(process.env.DATABASE_LOCAL, {
@@ -14,14 +14,14 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
 );
 
-const interns = JSON.parse(
-  fs.readFileSync(`${__dirname}/interns-simple.json`, 'utf-8')
-);
+// const interns = JSON.parse(
+//   fs.readFileSync(`${__dirname}/interns-simple.json`, 'utf-8')
+// );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    await Intern.create(interns);
+    await Tour.create(tours);
     // await Tour.create(interns);
     console.log('Data successfully loaded!');
   } catch (err) {
@@ -33,7 +33,7 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    await Intern.deleteMany();
+    await Tour.deleteMany();
     // await Tour.deleteMany();
     console.log('Data successfully deleted!');
   } catch (err) {
@@ -47,5 +47,3 @@ if (process.argv[2] === '--import') {
 } else if (process.argv[2] === '--delete') {
   deleteData();
 }
-
-console.log(process.argv);
