@@ -1,16 +1,23 @@
-exports.getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: "200",
-    message: "The route is not implemented yet!",
-  });
-};
+const User = require("./../model/userModel");
+const catchAsync = require("../utils/catchAsync");
 
-exports.createUser = (req, res) => {
+exports.getAllUsers = catchAsync(async (req, res) => {
+  const tours = await User.find();
+
+  res.status(200).json({
+    status: "200",
+    total: tours.length,
+    mesage: "Successfully retrived",
+    data: tours,
+  });
+});
+
+exports.createUser = catchAsync(async (req, res) => {
   res.status(500).json({
     status: "200",
     message: "The route is not implemented yet!",
   });
-};
+});
 
 exports.getUser = (req, res) => {
   res.status(500).json({
