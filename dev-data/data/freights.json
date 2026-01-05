@@ -1,0 +1,43 @@
+[
+  {
+    "freightOwnerId": "65a8ee92a123bc9010fed321",
+
+    "cargo": {
+      "type": "Construction Materials",
+      "description": "Cement bags",
+      "weightKg": 12000,
+      "quantity": 240
+    },
+
+    "route": {
+      "pickup": {
+        "city": "Addis Ababa",
+        "address": "Akaki Industrial Area"
+      },
+      "dropoff": {
+        "city": "Adama",
+        "address": "Main Warehouse Zone"
+      },
+      "distanceKm": 100
+    },
+
+    "schedule": {
+      "pickupDate": "2026-01-10T00:00:00.000Z",
+      "deliveryDeadline": "2026-01-11T00:00:00.000Z"
+    },
+
+    "truckRequirement": {
+      "type": "FLATBED",
+      "minCapacityKg": 15000
+    },
+
+    "pricing": {
+      "type": "BID",
+      "amount": null
+    },
+
+    "status": "OPEN",
+    "createdAt": "2026-01-05T09:30:00.000Z",
+    "updatedAt": "2026-01-05T09:30:00.000Z"
+  }
+]

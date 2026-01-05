@@ -1,0 +1,134 @@
+const mongoose = require("mongoose");
+
+const CargoSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    weightKg: {
+      type: Number,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const LocationSchema = new mongoose.Schema(
+  {
+    city: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const RouteSchema = new mongoose.Schema(
+  {
+    pickup: {
+      type: LocationSchema,
+      required: true,
+    },
+    dropoff: {
+      type: LocationSchema,
+      required: true,
+    },
+    distanceKm: {
+      type: Number,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const ScheduleSchema = new mongoose.Schema(
+  {
+    pickupDate: {
+      type: Date,
+      required: true,
+    },
+    deliveryDeadline: {
+      type: Date,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const TruckRequirementSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["FLATBED", "BOX", "REFRIGERATED", "TANKER", "LOWBED"],
+      required: true,
+    },
+    minCapacityKg: { type: Number, required: true },
+  },
+  { _id: false }
+);
+
+const PricingSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["FIXED", "BID"],
+      required: true,
+    },
+    amount: { type: Number },
+  },
+  { _id: false }
+);
+
+const FreightSchema = new mongoose.Schema(
+  {
+    freightOwnerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    cargo: { type: CargoSchema, required: true },
+    route: { type: RouteSchema, required: true },
+    schedule: { type: ScheduleSchema, required: true },
+    truckRequirement: {
+      type: TruckRequirementSchema,
+      required: true,
+    },
+    pricing: { type: PricingSchema, required: true },
+
+    status: {
+      type: String,
+      enum: [
+        "OPEN",
+        "BIDDING",
+        "ASSIGNED",
+        "IN_TRANSIT",
+        "DELIVERED",
+        "COMPLETED",
+        "CANCELLED",
+      ],
+      default: "OPEN",
+    },
+  },
+  {
+    timestamps: true, // auto creates createdAt & updatedAt
+  }
+);
+
+module.exports = mongoose.model("Freight", FreightSchema);

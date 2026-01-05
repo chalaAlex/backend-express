@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
 const dotenv = require('dotenv');
-const Tour = require('./../../model/tourModel');
-// const Intern = require('./../../model/internModel');
+const Freight = require('./../../model/freightModel');
 dotenv.config({ path: '../../config.env' });
 
 mongoose.connect(process.env.DATABASE_LOCAL, {
@@ -10,18 +9,14 @@ mongoose.connect(process.env.DATABASE_LOCAL, {
   console.log("ERROR: " + err);
 });
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
+const freights = JSON.parse(
+  fs.readFileSync(`${__dirname}/freights.json`, 'utf-8')
 );
-
-// const interns = JSON.parse(
-//   fs.readFileSync(`${__dirname}/interns-simple.json`, 'utf-8')
-// );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    await Tour.create(tours);
+    await Freight.create(freights);
     // await Tour.create(interns);
     console.log('Data successfully loaded!');
   } catch (err) {

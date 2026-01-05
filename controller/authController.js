@@ -3,11 +3,11 @@ const catchAsync = require("../utils/catchAsync");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils/appError");
 
-const signToken = id => {
+const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
-}
+};
 
 exports.signup = catchAsync(async (req, res) => {
   // const newUser = await User.create(req.body);
@@ -34,7 +34,7 @@ exports.signup = catchAsync(async (req, res) => {
   });
 });
 
-exports.login = (catchAsync(async (req, res, next) => { 
+exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body; // Object destructuring
 
   // 1) Check if email and password exist
@@ -45,8 +45,8 @@ exports.login = (catchAsync(async (req, res, next) => {
   // 2) Check if user exists && password is correct
   const user = await User.findOne({ email }).select("+password");
 
-  const correct = await user.correctPassword(password, user.password); 
-  // console.log(correct); 
+  const correct = await user.correctPassword(password, user.password);
+  // console.log(correct);
 
   if (!user || !correct) {
     return next(new AppError("Incorrect email or password", 401));
@@ -59,4 +59,9 @@ exports.login = (catchAsync(async (req, res, next) => {
     status: "success",
     token,
   });
-}));
+});
+
+exports.protect = catchAsync((req, res, next) => {
+  // 1) Getting the token 
+  next();
+});
