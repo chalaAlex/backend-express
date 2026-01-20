@@ -46,7 +46,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select("+password");
 
   const correct = await user.correctPassword(password, user.password);
-  // console.log(correct);
+  console.log("Correct:", correct);
 
   if (!user || !correct) {
     return next(new AppError("Incorrect email or password", 401));
@@ -61,7 +61,7 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.protect = catchAsync((req, res, next) => {
+exports.protect = catchAsync(async(req, res, next) => {
   // 1) Getting the token 
   next();
 });

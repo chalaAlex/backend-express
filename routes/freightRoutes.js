@@ -1,10 +1,11 @@
 const express = require("express");
 const freightController = require("../controller/freightController");
 const route = express.Router();
+const authController = require("../controller/authController");
 
 route
   .route("/")
-  .get(freightController.getAllFreights)
+  .get(authController.protect, freightController.getAllFreights)
   .post(freightController.createFreight);
 // route
 //   .route("/:id")
