@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
@@ -43,14 +44,17 @@ const userSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ["freight_owner", "carrier_owner"],
-    required: true,
+    enum: ["user", "carrier_owner", "admin"],
+    default: "user"
   },
 
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  lastPasswordChangedAt: Date,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 userSchema.pre("save", async function (next) {
@@ -67,21 +71,36 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,
-  userPassword
+  userPassword,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.lastPasswordChangedAt) {
+    const changedTimeStamp = parseInt(
+      this.lastPasswordChangedAt.getTime() / 1000,
+      10,
+    );
+    console.log(changedTimeStamp, JWTTimestamp);
+
+    return JWTTimestamp < changedTimeStamp;
+  }
+
+  return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+}
+
 module.exports = mongoose.model("User", userSchema);
-
-// // --- Freight Owner–specific fields ---
-// companyName: String,
-// address: String,
-
-// // --- Carrier / Truck Owner–specific fields ---
-// licenseNumber: String,
-// yearsOfExperience: Number,
-// trucks: [{
-//   type: mongoose.Schema.Types.ObjectId,
-//   ref: "Truck"        // reference to truck collection
-// }],

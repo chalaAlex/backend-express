@@ -6,7 +6,6 @@ const app = express();
 const userRouter = require("./routes/userRoutes");
 const tourRouter = require("./routes/tourRoutes");
 const freightRouter = require("./routes/freightRoutes");
-const internRouter = require("./routes/internRoutes");
 // const reviewRouter = require("./routes/reviewRouter");
 
 if (process.env.NODE_ENV === "development") {

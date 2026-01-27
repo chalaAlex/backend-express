@@ -1,0 +1,10 @@
+Logical steps to implement Authorization:
+-----------------------------------------
+    1.First protect the route from an unauthenticated users modifying the resource. Before deleting
+      the resource the admin should login to the system. This kind of stuff done through  
+      protecting the route.
+
+    2. Add "role" to the User Schema and then specify type of users exists within our system. 
+    eg. Our system has "freight_owner", "carrier_owner" and "admin". 
+    
+    3. 

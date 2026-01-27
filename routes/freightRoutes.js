@@ -6,11 +6,12 @@ const authController = require("../controller/authController");
 route
   .route("/")
   .get(authController.protect, freightController.getAllFreights)
-  .post(freightController.createFreight);
-// route
-//   .route("/:id")
-//   .get(freightController.getTour)
-//   .patch(freightController.updateTour)
-//   .delete(freightController.deleteTour);
+  .post(authController.protect, freightController.createFreight);
+
+route
+  .route("/:id")
+  .get(authController.protect, freightController.getFreight)
+  .patch(authController.protect, freightController.updateFreight)
+  .delete(authController.protect, authController.restrictTo("admin"), freightController.deleteFreight);
 
 module.exports = route;
