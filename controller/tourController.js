@@ -1,47 +1,33 @@
 const fs = require("fs");
 const Tour = require("./../model/tourModel");
 const { match } = require("assert");
+const APIFeatures = require('./../utils/apiFeatures');
 
 // Tour route handler
+exports.aliasTopTours = (req, res, next) => {
+  (req.query.limit = "3"),
+    (req.query.page = "2"),
+    (req.query.sort = "-ratingAverage, price"),
+    (req.query.fields =
+      "name, price, ratingAverage, summary, difficult, duration"),
+    next();
+};
+
 exports.getAllTour = async (req, res) => {
   try {
-    let sortBy = {};
-    // --- FILTERING --- //
-    const queryObj = { ...req.query };
-    const execludeFields = ["page", "sort", "limit", "fields"];
-    execludeFields.forEach((el) => delete queryObj[el]);
+    const feature = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate(); // Method Chaining
 
-    // // --- ADVANCED FILTERING --- //
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-    const query = Tour.find(JSON.parse(queryStr));
-
-    // --- SORTING --- //
-    if (req.query.sort) {
-      const fields = req.query.sort.split(",");
-      fields.forEach((field) => {
-        if (field.startsWith("-")) {
-          sortBy[field.substring(1)] = -1; // descending
-        } else {
-          sortBy[field] = 1; // ascending
-        }
-      });
-    } else {
-      sortBy = { createdAt: -1 }; // default sort
-      console.log("no sort fields");
-    }
-
-    query.sort(sortBy);
-    const tours = await query;
+    const tours = await feature.query;
 
     res.status(200).json({
       status: "200",
       total: tours.length,
       mesage: "Successfully retrived",
-      data: {
-        tours,
-      },
+      data: tours,
     });
   } catch (err) {
     console.log(err);
@@ -109,7 +95,6 @@ exports.updateTour = async (req, res) => {
 exports.deleteTour = async (req, res) => {
   try {
     const tour = await Tour.findByIdAndDelete(req.params.id);
-
     res.status(204).json({
       status: "200",
       data: {

@@ -1,0 +1,9 @@
+1. When the freight owner adds vehicle information, alongside the owner should add
+the driver name and important info about the driver of the carrier. 
+
+2. While the creation of the carrier, the owner should send important docs for reciewing 
+by admins to get approval. 
+
+--- FREIGHT OWNER SPECIFIC FIELDS ---- 
+1. companyName: make comapny name as a "private" if the user doesn't have a recognized company. 
+2. address: 
