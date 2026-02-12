@@ -1,20 +1,17 @@
 const express = require("express");
-const router = express.Router();
 const truckController = require("../controller/truckController");
+const route = express.Router();
 const authController = require("../controller/authController");
 
+route
+  .route("/")
+  .get(authController.protect, truckController.getAllTrucks)
+  .post(authController.protect, truckController.createTruck);
 
-// Get upload URL
-// router.post(
-//   "/upload-url",
-//   authController.protect,
-//   truckController.getTruckImageUploadUrl
-// );
+route
+  .route("/:id")
+  .get(authController.protect, truckController.getTruck)
+  .patch(authController.protect, truckController.updateTruck)
+  .delete(authController.protect, authController.restrictTo("admin"), truckController.deleteTruck);
 
-// Create truck
-// router.post("/", authController.protect, truckController.createTruck);
-
-// List trucks
-router.get("/", truckController.getAllTrucks);
-// authController.protect, 
-module.exports = router;
+module.exports = route;

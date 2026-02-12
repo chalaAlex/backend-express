@@ -6,7 +6,7 @@
     "pricePerDay": 5000,
     "pricePerHour": 250,
     "capacityTons": 10,
-    "carrierType": "flatbed",
+    "carrierType": "refrigerated",
     "location": "Addis Ababa",
     "radiusKm": 50,
     "imageUrl": "https://example.com/truck1.jpg",
@@ -110,7 +110,7 @@
     "pricePerDay": 5000,
     "pricePerHour": 250,
     "capacityTons": 10,
-    "carrierType": "flatbed",
+    "carrierType": "refrigerated",
     "location": "Addis Ababa",
     "radiusKm": 50,
     "imageUrl": "https://example.com/truck1.jpg",
@@ -401,5 +401,18 @@
     "radiusKm": 50,
     "imageUrl": "https://example.com/truck1.jpg",
     "isAvailable": true
+  },
+  {
+    "id": "truck_32",
+    "model": "MIE",
+    "company": "MEI Comapany",
+    "pricePerDay": 5000,
+    "pricePerHour": 250,
+    "capacityTons": 10,
+    "carrierType": "refrigerated",
+    "location": "Addis Ababa",
+    "radiusKm": 50,
+    "imageUrl": "https://example.com/truck1.jpg",
+    "isAvailable": false
   }
 ]

@@ -1,7 +1,6 @@
-
 class APIFeatures {
   constructor(query, queryString) {
-    (this.query = query), (this.queryString = queryString);
+    ((this.query = query), (this.queryString = queryString));
   }
 
   // // ---------FILTERING---------- // //
@@ -15,6 +14,19 @@ class APIFeatures {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
     this.query.find(JSON.parse(queryStr));
+
+    // ⭐ SEARCH IMPLEMENTATION
+    if (this.queryString.search) {
+      const search = this.queryString.search;
+
+      this.query = this.query.find({
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { model: { $regex: search, $options: "i" } },
+          { company: { $regex: search, $options: "i" } },
+        ],
+      });
+    }
 
     return this;
   }
