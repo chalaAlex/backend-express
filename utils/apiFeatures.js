@@ -60,6 +60,8 @@ class APIFeatures {
 
     return this;
   }
+
+  // // --------SEARCHING---------- // //
 }
 
 module.exports = APIFeatures;

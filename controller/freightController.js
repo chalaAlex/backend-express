@@ -15,9 +15,9 @@ exports.getAllFreights = catchAsync(async (req, res) => {
   const freight = await feature.query;
 
   res.status(200).json({
-    status: "200",
+    statusCode: 200,
+    message: "Successfully retrived all freights",
     total: freight.length,
-    mesage: "Successfully retrived",
     data: freight,
   });
 });
@@ -26,7 +26,8 @@ exports.getAllFreights = catchAsync(async (req, res) => {
 exports.createFreight = catchAsync(async (req, res) => {
   const newFreight = await Freight.create(req.body);
   res.status(201).json({
-    status: "201",
+    statusCode: 201,
+    message: "Successfully created freight",
     data: {
       freight: newFreight,
     },
@@ -38,8 +39,8 @@ exports.getFreight = catchAsync(async (req, res) => {
   console.log("ID:", req.params.id);
   const freight = await Freight.findById(req.params.id);
   res.status(200).json({
-    status: "200",
-    mesage: "Orders successfully retrived",
+    statusCode: 200,
+    message: "Freight successfully retrieved",
     data: {
       freight,
     },
@@ -52,9 +53,10 @@ exports.updateFreight = catchAsync(async (req, res) => {
     new: true,
   });
   res.status(200).json({
-    status: "200",
+    statusCode: 200,
+    message: "Freight successfully updated",
     data: {
-      tour: freight,
+      freight,
     },
   });
 });
@@ -64,7 +66,8 @@ exports.deleteFreight = catchAsync(async (req, res) => {
   const freight = await Freight.findByIdAndDelete(req.params.id);
 
   res.status(204).json({
-    status: "200",
+    statusCode: 204,
+    message: "Freight successfully deleted",
     data: {
       freight,
     },
@@ -74,14 +77,14 @@ exports.deleteFreight = catchAsync(async (req, res) => {
 exports.getFreight = catchAsync(async (req, res) => {
   const freight = await Freight.findById(req.params.id);
   res.status(200).json({
-    status: "200",
-    mesage: "Orders successfully retrived",
+    statusCode: 200,
+    message: "Freight successfully retrieved",
     data: {
       freight,
     },
   });
   res.status(400).json({
-    staus: "Fail",
+    statusCode: 400,
     message: "Error: " + err,
   });
 });

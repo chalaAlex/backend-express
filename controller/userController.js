@@ -5,37 +5,37 @@ exports.getAllUsers = catchAsync(async (req, res) => {
   const tours = await User.find();
 
   res.status(200).json({
-    status: "200",
+    statusCode: 200,
+    message: "Successfully retrieved all users",
     total: tours.length,
-    mesage: "Successfully retrived",
     data: tours,
   });
 });
 
 exports.createUser = catchAsync(async (req, res) => {
   res.status(500).json({
-    status: "200",
+    statusCode: 500,
     message: "The route is not implemented yet!",
   });
 });
 
 exports.getUser = (req, res) => {
   res.status(500).json({
-    status: "200",
+    statusCode: 500,
     message: "The route is not implemented yet!",
   });
 };
 
 exports.updateUser = (req, res) => {
   res.status(500).json({
-    status: "200",
+    statusCode: 500,
     message: "The route is not implemented yet!",
   });
 };
 
 exports.deleteUser = (req, res) => {
   res.status(500).json({
-    status: "200",
+    statusCode: 500,
     message: "The route is not implemented yet!",
   });
 };

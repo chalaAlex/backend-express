@@ -14,17 +14,17 @@ const signToken = (id) => {
 };
 
 const createAndSendToken = (user, statusCode, res) => {
-    const token = signToken(user._id);
-    user.password = undefined;
-    if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-    res.cookie('jwt', token, cookieOptions);
-    res.status(statusCode).json({
-        statis: 'success',
-        data: user,
-        token: token,
-    });
+  const token = signToken(user._id);
+  user.password = undefined;
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  res.cookie("jwt", token, cookieOptions);
+  res.status(statusCode).json({
+    statusCode: statusCode,
+    message: "Successfully logged in",
+    data: user,
+    token: token,
+  });
 };
-
 
 exports.signup = catchAsync(async (req, res) => {
   // const newUser = await User.create(req.body);
@@ -43,7 +43,8 @@ exports.signup = catchAsync(async (req, res) => {
   });
 
   res.status(201).json({
-    status: "success",
+    statusCode: 201,
+    message: "Successfully signed up    ",
     token,
     data: {
       user: newUser,
@@ -72,8 +73,12 @@ exports.login = catchAsync(async (req, res, next) => {
   const token = signToken(user._id);
 
   res.status(200).json({
-    status: "success",
+    statusCode: 200,
+    message: "Successfully logged in",
     token,
+    data: {
+      user,
+    },
   });
 });
 
@@ -166,15 +171,13 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash("sha256")
     .update(req.params.token)
     .digest("hex");
-    
-    
 
   const user = await User.findOne({
     resetPasswordToken: hashedToken,
     resetPasswordExpires: { $gt: Date.now() },
   });
 
-  console.log("///////////////////", {user});
+  console.log("///////////////////", { user });
   //2) if token is not expired and there is a user, set new password
 
   if (!user) {
@@ -190,7 +193,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //3) Update changedPasswordAt property for the user
   //4) log the user in. send JWT
   const token = signToken(user._id);
-  
+
   res.status(200).json({
     status: "success",
     token,

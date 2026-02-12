@@ -6,6 +6,8 @@ const app = express();
 const userRouter = require("./routes/userRoutes");
 const tourRouter = require("./routes/tourRoutes");
 const freightRouter = require("./routes/freightRoutes");
+const truckRoutes = require("./routes/truckRoutes");
+
 // const reviewRouter = require("./routes/reviewRouter");
 
 if (process.env.NODE_ENV === "development") {
@@ -26,5 +28,6 @@ app.set("query parser", "extended"); // For complex parsing tasks.
 app.use("/api/v1/freights", freightRouter);
 app.use("/api/v1/users", userRouter);
 // app.use("/api/v1/truck-owners", reviewRouter);
+app.use("/api/v1/trucks", truckRoutes);
 
 module.exports = app;
