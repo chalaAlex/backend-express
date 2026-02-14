@@ -10,14 +10,14 @@ mongoose.connect(process.env.DATABASE_LOCAL, {
   console.log("ERROR: " + err);
 });
 
-const trucks = JSON.parse(
-  fs.readFileSync(`${__dirname}/trucks.json`, 'utf-8')
+const freight = JSON.parse(
+  fs.readFileSync(`${__dirname}/freights.json`, 'utf-8')
 );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    await Truck.create(trucks);
+    await Freight.create(trucks);
     // await Tour.create(interns);
     console.log('Data successfully loaded!');
   } catch (err) {
@@ -29,7 +29,7 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    await Truck.deleteMany();
+    await Freight.deleteMany();
     // await Tour.deleteMany();
     console.log('Data successfully deleted!');
   } catch (err) {
