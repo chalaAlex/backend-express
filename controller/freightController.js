@@ -1,6 +1,4 @@
-const fs = require("fs");
 const Freight = require("./../model/freightModel");
-const { match } = require("assert");
 const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 
@@ -37,7 +35,10 @@ exports.createFreight = catchAsync(async (req, res) => {
 // --------------- GET FREIGHT ---------------//
 exports.getFreight = catchAsync(async (req, res) => {
   console.log("ID:", req.params.id);
-  const freight = await Freight.findById(req.params.id);
+  const freight = await Freight.findById(req.params.id).populate(
+    "freightOwnerId",
+    "firstName, lastName"
+  );
   res.status(200).json({
     statusCode: 200,
     message: "Freight successfully retrieved",

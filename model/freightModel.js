@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { calculateDistanceBetweenCities } = require("../utils/distanceHelper");
 
 const CargoSchema = new mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const CargoSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const LocationSchema = new mongoose.Schema(
@@ -34,7 +35,7 @@ const LocationSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const RouteSchema = new mongoose.Schema(
@@ -53,7 +54,7 @@ const RouteSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const ScheduleSchema = new mongoose.Schema(
@@ -68,7 +69,7 @@ const ScheduleSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const TruckRequirementSchema = new mongoose.Schema(
@@ -80,7 +81,7 @@ const TruckRequirementSchema = new mongoose.Schema(
     },
     minCapacityKg: { type: Number, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const PricingSchema = new mongoose.Schema(
@@ -92,7 +93,7 @@ const PricingSchema = new mongoose.Schema(
     },
     amount: { type: Number },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const FreightSchema = new mongoose.Schema(
@@ -128,7 +129,21 @@ const FreightSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // auto creates createdAt & updatedAt
-  }
+  },
 );
+
+FreightSchema.pre("save", async function (next) {
+  if (
+    this.isModified("route.pickup.city") ||
+    this.isModified("route.dropoff.city")
+  ) {
+    const distance = await calculateDistanceBetweenCities(
+      this.route.pickup.city,
+      this.route.dropoff.city,
+    );
+    this.route.distanceKm = distance ? parseFloat(distance.toFixed(2)) : null;
+  }
+  next();
+});
 
 module.exports = mongoose.model("Freight", FreightSchema);

@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
+const { Schema, model, Types } = mongoose;
 
 const truckSchema = new mongoose.Schema(
   {
-    // Business ID (separate from Mongo _id)
-    id: {
-      type: String,
+    truckOwner: {
+      type: Types.ObjectId,
+      ref: "User",
       required: true,
-      unique: true,
-      trim: true,
     },
 
     model: {
@@ -16,31 +15,30 @@ const truckSchema = new mongoose.Schema(
       trim: true,
     },
 
-    company: {
+    plateNumber: { 
+      type: String,
+      // required: true,
+    },
+
+    brand: {
       type: String,
       required: true,
       trim: true,
     },
 
-    pricePerDay: {
+    pricePerKm: {
       type: Number,
       required: true,
       min: 0,
     },
 
-    pricePerHour: {
+    loadCapacity: {
       type: Number,
       required: true,
       min: 0,
     },
 
-    capacityTons: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
-    carrierType: {
+    features: {
       type: String,
       required: true,
       enum: ["flatbed", "refrigerated", "dryVan"],
@@ -49,9 +47,8 @@ const truckSchema = new mongoose.Schema(
 
     location: {
       type: String,
-      required: true,
       trim: true,
-      index: true, // Enables location-based filtering
+      index: true,
     },
 
     radiusKm: {
@@ -60,11 +57,13 @@ const truckSchema = new mongoose.Schema(
       min: 0,
     },
 
-    imageUrl: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    image: [
+      {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    ],
 
     isAvailable: {
       type: Boolean,
@@ -73,7 +72,7 @@ const truckSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // adds createdAt & updatedAt
+    timestamps: true,
     versionKey: false,
   },
 );

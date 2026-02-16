@@ -6,6 +6,8 @@ const app = express();
 const userRouter = require("./routes/userRoutes");
 const freightRouter = require("./routes/freightRoutes");
 const truckRoutes = require("./routes/truckRoutes");
+const reviewRoutes = require("./routes/reviewRouter");
+const distanceRouter = require("./routes/distanceRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -23,5 +25,7 @@ app.set("query parser", "extended"); // For complex parsing tasks.
 app.use("/api/v1/freights", freightRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/trucks", truckRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api", distanceRouter);
 
 module.exports = app;

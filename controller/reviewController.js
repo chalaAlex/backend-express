@@ -1,22 +1,31 @@
-// import Review from "../models/Review.model.js";
+const Review = require("../model/reviewModel");
+const catchAsync = require("../utils/catchAsync");
+const APIFeatures = require("./../utils/apiFeatures");
 
-// export const createReview = async (req, res) => {
-//   const reviewerId = req.user.id;
-//   const truckOwnerId = req.params.truckOwnerId;
-//   const { rating, reviewText } = req.body;
+exports.getAllReiview = catchAsync(async (req, res) => {
+  const feature = new APIFeatures(Review.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate(); // Method Chaining
 
-//   const review = await Review.create({
-//     reviewer: reviewerId,
-//     truckOwner: truckOwnerId,
-//     rating,
-//     reviewText
-//   });
+  const review = await feature.query;
 
-//   // (Optional but recommended)
-//   // updateTruckOwnerRating(truckOwnerId);
+  res.status(200).json({
+    statusCode: 200,
+    message: "Successfully retrived all reiview",
+    total: review.length,
+    data: review,
+  });
+});
 
-//   return res.status(201).json({
-//     message: "Review created successfully",
-//     data: review
-//   });
-// };
+exports.createReview = catchAsync(async (req, res) => {
+
+  const review = await Review.create(req.body);
+
+  return res.status(201).json({
+    message: "Review created successfully",
+    data: review,
+  });
+});
+

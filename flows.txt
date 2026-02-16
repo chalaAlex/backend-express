@@ -7,4 +7,7 @@ Logical steps to implement Authorization:
     2. Add "role" to the User Schema and then specify type of users exists within our system. 
     eg. Our system has "freight_owner", "carrier_owner" and "admin". 
     
-    3. 
+    3.
+
+
+2. 
