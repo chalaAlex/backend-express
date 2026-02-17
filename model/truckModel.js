@@ -15,9 +15,10 @@ const truckSchema = new mongoose.Schema(
       trim: true,
     },
 
-    plateNumber: { 
+    plateNumber: {
       type: String,
-      // required: true,
+      unique: true,
+      required: true,
     },
 
     brand: {
@@ -48,12 +49,12 @@ const truckSchema = new mongoose.Schema(
     location: {
       type: String,
       trim: true,
-      index: true,
+      required: true,
     },
 
     radiusKm: {
       type: Number,
-      required: true,
+      // required: true,
       min: 0,
     },
 

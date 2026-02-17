@@ -31,7 +31,10 @@ exports.createTruck = catchAsync(async (req, res, next) => {
     return next(new AppError("Only carrier owners can create trucks", 403));
   }
 
-  const newTruck = await Truck.create(req.body)
+   const newTruck = await Truck.create({
+    ...req.body,
+    truckOwner: req.user.id,
+  });
 
   res.status(201).json({
     statusCode: 201,
@@ -53,6 +56,21 @@ exports.getTruck = catchAsync(async (req, res) => {
     message: "Truck successfully retrieved",
     data: {
       truck,
+    },
+  });
+});
+
+// --------------- GET TRUCK by USER_ID ---------------//
+exports.getMyTrucks = catchAsync(async (req, res) => {
+  console.log("get my truck called");
+  console.log(req.user.id);
+  const trucks = await Truck.find({ truckOwner: req.user.id });
+
+  res.status(200).json({
+    status: "success",
+    results: trucks.length,
+    data: {
+      trucks,
     },
   });
 });

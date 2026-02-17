@@ -115,35 +115,36 @@ const FreightSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: [
-        "OPEN",
-        "BIDDING",
-        "ASSIGNED",
-        "IN_TRANSIT",
-        "DELIVERED",
-        "COMPLETED",
-        "CANCELLED",
-      ],
+      enum: ["OPEN", "BIDDING", "BOOKED", "COMPLETED", "CANCELLED"],
       default: "OPEN",
     },
+    bidCount: {
+      type: Number,
+      default: 0,
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
   },
+
   {
     timestamps: true, // auto creates createdAt & updatedAt
   },
 );
 
-FreightSchema.pre("save", async function (next) {
-  if (
-    this.isModified("route.pickup.city") ||
-    this.isModified("route.dropoff.city")
-  ) {
-    const distance = await calculateDistanceBetweenCities(
-      this.route.pickup.city,
-      this.route.dropoff.city,
-    );
-    this.route.distanceKm = distance ? parseFloat(distance.toFixed(2)) : null;
-  }
-  next();
-});
+// FreightSchema.pre("save", async function (next) {
+//   if (
+//     this.isModified("route.pickup.city") ||
+//     this.isModified("route.dropoff.city")
+//   ) {
+//     const distance = await calculateDistanceBetweenCities(
+//       this.route.pickup.city,
+//       this.route.dropoff.city,
+//     );
+//     this.route.distanceKm = distance ? parseFloat(distance.toFixed(2)) : null;
+//   }
+//   next();
+// });
 
 module.exports = mongoose.model("Freight", FreightSchema);

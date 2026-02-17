@@ -8,6 +8,7 @@ const freightRouter = require("./routes/freightRoutes");
 const truckRoutes = require("./routes/truckRoutes");
 const reviewRoutes = require("./routes/reviewRouter");
 const distanceRouter = require("./routes/distanceRoutes");
+const biddingRouter = require("./routes/biddingRouter");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -15,7 +16,6 @@ if (process.env.NODE_ENV === "development") {
 // 1) MIDDLEWARES
 app.use(express.json());
 app.use((req, res, next) => {
-  console.log(req.headers);
   next();
 });
 
@@ -26,6 +26,7 @@ app.use("/api/v1/freights", freightRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/trucks", truckRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/bidding", biddingRouter);
 app.use("/api", distanceRouter);
 
 module.exports = app;

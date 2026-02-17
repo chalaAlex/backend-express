@@ -8,10 +8,10 @@ route
   .get(authController.protect, reviewController.getAllReiview)
   .post(authController.protect, reviewController.createReview);
 
-// route
-//   .route("/:id")
-//   .get(authController.protect, freightController.getFreight)
-//   .patch(authController.protect, freightController.updateFreight)
-//   .delete(authController.protect, authController.restrictTo("admin"), freightController.deleteFreight);
+route
+  .route("/:id")
+  .get(authController.protect, reviewController.getReview)
+  .patch(authController.protect, reviewController.updateReview)
+  .delete(authController.protect, reviewController.deleteReview);
 
 module.exports = route;
