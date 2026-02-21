@@ -20,7 +20,6 @@ exports.getAllReiview = catchAsync(async (req, res) => {
 });
 
 exports.createReview = catchAsync(async (req, res) => {
-
   const review = await Review.create(req.body);
 
   return res.status(201).json({
@@ -64,10 +63,14 @@ exports.updateReview = catchAsync(async (req, res) => {
     });
   }
 
-  const updatedReview = await Review.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const updatedReview = await Review.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
   res.status(200).json({
     statusCode: 200,

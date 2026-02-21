@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema, model, Types } = mongoose;
+const { Types } = mongoose;
 
 const truckSchema = new mongoose.Schema(
   {

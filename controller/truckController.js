@@ -27,13 +27,10 @@ exports.getAllTrucks = catchAsync(async (req, res) => {
 
 // --------------- CREATE TRUCK ---------------//
 exports.createTruck = catchAsync(async (req, res, next) => {
-  if (req.user.role !== "carrier_owner") {
-    return next(new AppError("Only carrier owners can create trucks", 403));
-  }
-
+  if(!req.body.truckOwner) req.body.truckOwner = req.user.id;
    const newTruck = await Truck.create({
     ...req.body,
-    truckOwner: req.user.id,
+    truckOwner: req.body.truckOwner,
   });
 
   res.status(201).json({
@@ -133,7 +130,7 @@ exports.deleteTruck = catchAsync(async (req, res, next) => {
 
   // 3️⃣ Authorization → only owner or admin
   if (
-    truck.truckOwnerId.toString() !== req.user.id &&
+    truck.truckOwner.toString() !== req.user.id &&
     req.user.role !== "admin"
   ) {
     return next(new AppError("You are not allowed to delete this truck", 403));

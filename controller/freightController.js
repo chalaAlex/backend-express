@@ -22,7 +22,10 @@ exports.getAllFreights = catchAsync(async (req, res) => {
 
 // --------------- CREATE FREIGHT ---------------//
 exports.createFreight = catchAsync(async (req, res) => {
-  const newFreight = await Freight.create(req.body);
+  const newFreight = await Freight.create({
+    ...req.body,
+    freightOwnerId: req.user.id,
+  });
   res.status(201).json({
     statusCode: 201,
     message: "Successfully created freight",
@@ -32,13 +35,9 @@ exports.createFreight = catchAsync(async (req, res) => {
   });
 });
 
-// --------------- GET FREIGHT ---------------//
+// ---------------- GET FREIGHT ------------------//
 exports.getFreight = catchAsync(async (req, res) => {
-  console.log("ID:", req.params.id);
-  const freight = await Freight.findById(req.params.id).populate(
-    "freightOwnerId",
-    "firstName, lastName"
-  );
+  const freight = await Freight.findById(req.params.id).populate("bids");
   res.status(200).json({
     statusCode: 200,
     message: "Freight successfully retrieved",
@@ -48,7 +47,7 @@ exports.getFreight = catchAsync(async (req, res) => {
   });
 });
 
-// --------------- UPDATE FREIGHT ---------------//
+// ---------------- UPDATE FREIGHT ---------------//
 exports.updateFreight = catchAsync(async (req, res) => {
   const freight = await Freight.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -75,17 +74,17 @@ exports.deleteFreight = catchAsync(async (req, res) => {
   });
 });
 
-exports.getFreight = catchAsync(async (req, res) => {
-  const freight = await Freight.findById(req.params.id);
-  res.status(200).json({
-    statusCode: 200,
-    message: "Freight successfully retrieved",
-    data: {
-      freight,
-    },
-  });
-  res.status(400).json({
-    statusCode: 400,
-    message: "Error: " + err,
-  });
-});
+// exports.getFreight = catchAsync(async (req, res) => {
+//   const freight = await Freight.findById(req.params.id);
+//   res.status(200).json({
+//     statusCode: 200,
+//     message: "Freight successfully retrieved",
+//     data: {
+//       freight,
+//     },
+//   });
+//   res.status(400).json({
+//     statusCode: 400,
+//     message: "Error: " + err,
+//   });
+// });

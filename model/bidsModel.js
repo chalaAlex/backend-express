@@ -1,9 +1,15 @@
 const mongoose = require("mongoose");
 const { Schema, model, Types } = mongoose;
 
-const biddingSchema = new Schema(
+const bidsSchema = new Schema(
   {
     freightOwnerId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    
+    carrierOwnerId: {
       type: Types.ObjectId,
       ref: "User",
       required: true,
@@ -33,10 +39,15 @@ const biddingSchema = new Schema(
       maxlength: 100,
       trim: true,
     },
+    status: {
+      type: String,
+      enum: ["PENDING", "ACCEPTED", "REJECTED", "CANCELLED", "EXPIRED"],
+      default: "PENDING",
+    },
   },
   { timestamps: true },
 );
 
-biddingSchema.index({ carrierId: 1, freightId: 1 }, { unique: true });
+bidsSchema.index({ carrierId: 1, freightId: 1 }, { unique: true });
 
-module.exports = model("Bidding", biddingSchema);
+module.exports = model("Bids", bidsSchema);

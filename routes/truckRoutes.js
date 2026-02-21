@@ -6,7 +6,11 @@ const authController = require("../controller/authController");
 route
   .route("/")
   .get(authController.protect, truckController.getAllTrucks)
-  .post(authController.protect, truckController.createTruck);
+  .post(
+    authController.protect,
+    authController.restrictTo("carrier_owner"),
+    truckController.createTruck,
+  );
 
 route.get("/my-trucks", authController.protect, truckController.getMyTrucks);
 

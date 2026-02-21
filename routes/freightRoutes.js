@@ -1,17 +1,39 @@
 const express = require("express");
 const freightController = require("../controller/freightController");
-const route = express.Router();
 const authController = require("../controller/authController");
+const bidController = require("../controller/bidsController");
+const bidRouter = require("./bidsRouter");
 
-route
+const router = express.Router();
+
+router.use("/:freightId/bids", bidRouter);
+
+router
   .route("/")
   .get(authController.protect, freightController.getAllFreights)
-  .post(authController.protect, freightController.createFreight);
+  .post(authController.protect, authController.restrictTo("user"), freightController.createFreight);
 
-route
+router
   .route("/:id")
   .get(authController.protect, freightController.getFreight)
   .patch(authController.protect, freightController.updateFreight)
-  .delete(authController.protect, authController.restrictTo("admin"), freightController.deleteFreight);
+  .delete(
+    authController.protect,
+    authController.restrictTo("admin"),
+    freightController.deleteFreight,
+  );
 
-module.exports = route;
+router
+  .route("/:freightId/bids")
+  .get(
+    authController.protect,
+    authController.restrictTo("carrier_owner"),
+    bidController.getAllBid,
+  )
+  .post(
+    authController.protect,
+    authController.restrictTo("carrier_owner"),
+    bidController.createBid,
+  );
+
+module.exports = router;
