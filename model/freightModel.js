@@ -142,6 +142,8 @@ const FreightSchema = new mongoose.Schema(
   },
 );
 
+// FreightSchema.virtual("")
+
 FreightSchema.virtual("bids", {
   ref: "Bids",
   foreignField: "freightId",
