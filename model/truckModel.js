@@ -57,15 +57,12 @@ const truckSchema = new mongoose.Schema(
       // required: true,
       min: 0,
     },
-
     image: [
       {
         type: String,
-        required: true,
         trim: true,
       },
     ],
-
     isAvailable: {
       type: Boolean,
       default: true,

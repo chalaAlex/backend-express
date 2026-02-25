@@ -25,6 +25,10 @@ const CargoSchema = new mongoose.Schema(
 
 const LocationSchema = new mongoose.Schema(
   {
+    region: {
+      type: String,
+      required: true,
+    },
     city: {
       type: String,
       required: true,
@@ -88,7 +92,7 @@ const PricingSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ["FIXED", "BID"],
+      enum: ["FIXED", "NEGOTIABLE"],
       required: true,
     },
     amount: { type: Number },
@@ -122,6 +126,13 @@ const FreightSchema = new mongoose.Schema(
       enum: ["OPEN", "BIDDING", "BOOKED", "COMPLETED", "CANCELLED"],
       default: "OPEN",
     },
+    image: [
+      {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    ],
     bidCount: {
       type: Number,
       default: 0,
@@ -142,26 +153,27 @@ const FreightSchema = new mongoose.Schema(
   },
 );
 
-// FreightSchema.virtual("")
-
 FreightSchema.virtual("bids", {
   ref: "Bids",
   foreignField: "freightId",
   localField: "_id",
 });
 
-FreightSchema.pre("save", async function (next) {
-  if (
-    this.isModified("route.pickup.city") ||
-    this.isModified("route.dropoff.city")
-  ) {
-    const distance = await calculateDistanceBetweenCities(
-      this.route.pickup.city,
-      this.route.dropoff.city,
-    );
-    this.route.distanceKm = distance ? parseFloat(distance.toFixed(2)) : null;
-  }
-  next();
-});
+// FreightSchema.pre("save", async function (next) {
+//   if (
+//     this.isModified("route.pickup.city") ||
+//     this.isModified("route.dropoff.city")
+//   ) {
+//     const distance = await calculateDistanceBetweenCities(
+//       this.route.pickup.city,
+//       this.route.dropoff.city,
+//     );
+//     this.route.distanceKm = distance ? parseFloat(distance.toFixed(2)) : null;
+//   }
+//   next();
+// });
 
 module.exports = mongoose.model("Freight", FreightSchema);
+
+
+
