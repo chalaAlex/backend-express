@@ -1,6 +1,4 @@
-const fs = require("fs");
 const Freight = require("./../model/freightModel");
-const { match } = require("assert");
 const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 
@@ -15,46 +13,50 @@ exports.getAllFreights = catchAsync(async (req, res) => {
   const freight = await feature.query;
 
   res.status(200).json({
-    status: "200",
+    statusCode: 200,
+    message: "Successfully retrived all freights",
     total: freight.length,
-    mesage: "Successfully retrived",
     data: freight,
   });
 });
 
 // --------------- CREATE FREIGHT ---------------//
 exports.createFreight = catchAsync(async (req, res) => {
-  const newFreight = await Freight.create(req.body);
+  const newFreight = await Freight.create({
+    ...req.body,
+    freightOwnerId: req.user.id,
+  });
   res.status(201).json({
-    status: "201",
+    statusCode: 201,
+    message: "Successfully created freight",
     data: {
       freight: newFreight,
     },
   });
 });
 
-// --------------- GET FREIGHT ---------------//
+// ---------------- GET FREIGHT ------------------//
 exports.getFreight = catchAsync(async (req, res) => {
-  console.log("ID:", req.params.id);
-  const freight = await Freight.findById(req.params.id);
+  const freight = await Freight.findById(req.params.id).populate("bids");
   res.status(200).json({
-    status: "200",
-    mesage: "Orders successfully retrived",
+    statusCode: 200,
+    message: "Freight successfully retrieved",
     data: {
       freight,
     },
   });
 });
 
-// --------------- UPDATE FREIGHT ---------------//
+// ---------------- UPDATE FREIGHT ---------------//
 exports.updateFreight = catchAsync(async (req, res) => {
   const freight = await Freight.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
   res.status(200).json({
-    status: "200",
+    statusCode: 200,
+    message: "Freight successfully updated",
     data: {
-      tour: freight,
+      freight,
     },
   });
 });
@@ -64,24 +66,25 @@ exports.deleteFreight = catchAsync(async (req, res) => {
   const freight = await Freight.findByIdAndDelete(req.params.id);
 
   res.status(204).json({
-    status: "200",
+    statusCode: 204,
+    message: "Freight successfully deleted",
     data: {
       freight,
     },
   });
 });
 
-exports.getFreight = catchAsync(async (req, res) => {
-  const freight = await Freight.findById(req.params.id);
-  res.status(200).json({
-    status: "200",
-    mesage: "Orders successfully retrived",
-    data: {
-      freight,
-    },
-  });
-  res.status(400).json({
-    staus: "Fail",
-    message: "Error: " + err,
-  });
-});
+// exports.getFreight = catchAsync(async (req, res) => {
+//   const freight = await Freight.findById(req.params.id);
+//   res.status(200).json({
+//     statusCode: 200,
+//     message: "Freight successfully retrieved",
+//     data: {
+//       freight,
+//     },
+//   });
+//   res.status(400).json({
+//     statusCode: 400,
+//     message: "Error: " + err,
+//   });
+// });

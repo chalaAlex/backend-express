@@ -1,17 +1,17 @@
-// import express from "express";
-// import { authenticate } from "../middlewares/auth.middleware.js";
-// import { preventDuplicateReview } from "../middlewares/preventDuplicateReview.middleware.js";
-// import { validateReview } from "../middlewares/validateReview.middleware.js";
-// import { createReview } from "../controllers/review.controller.js";
-// import reviewController from "../controller/reviewController.js";
-// const router = express.Router();
+const express = require("express");
+const route = express.Router();
+const authController = require("../controller/authController");
+const reviewController = require("../controller/reviewController");
 
-// router.route('/truck-owners/:truckOwnerId/reviews').get(reviewController.createReview).post(
-//   authenticate,
-//   preventDuplicateReview,
-//   validateReview,
-//   createReview
-// );
-// router
+route
+  .route("/")
+  .get(authController.protect, reviewController.getAllReiview)
+  .post(authController.protect, reviewController.createReview);
 
-// export default router;
+route
+  .route("/:id")
+  .get(authController.protect, reviewController.getReview)
+  .patch(authController.protect, reviewController.updateReview)
+  .delete(authController.protect, reviewController.deleteReview);
+
+module.exports = route;

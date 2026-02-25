@@ -41,13 +41,22 @@ const userSchema = new mongoose.Schema({
       message: "Passwords are not the same!",
     },
   },
-
   role: {
     type: String,
     enum: ["user", "carrier_owner", "admin"],
-    default: "user"
+    default: "carrier_owner",
   },
-
+  ratingAverage: {
+    type: Number,
+    default: 4.5,
+    min: [1, "Rating must be above 1.0"],
+    max: [5, "Rating must be below 5.0"],
+  },
+  ratingQuantity: {
+    type: Number,
+    default: 0,
+  },
+  profileImage: String,
   createdAt: {
     type: Date,
     default: Date.now,
@@ -58,14 +67,14 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", async function (next) {
-  // only run this function if the password was actually modified
   if (!this.isModified("password")) return next();
-
-  // Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
-
-  // Delete passwordConfirm field
   this.passwordConfirm = undefined;
+
+  if (this.role == "user" || this.role == "admin") {
+    this.ratingAverage = undefined;
+    this.ratingQuantity = undefined;
+  }
   next();
 });
 
@@ -101,6 +110,6 @@ userSchema.methods.createPasswordResetToken = function () {
   this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
-}
+};
 
 module.exports = mongoose.model("User", userSchema);

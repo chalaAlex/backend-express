@@ -1,6 +1,4 @@
-const fs = require("fs");
 const Tour = require("./../model/tourModel");
-const { match } = require("assert");
 const APIFeatures = require('./../utils/apiFeatures');
 
 // Tour route handler

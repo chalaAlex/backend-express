@@ -3,20 +3,21 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const Freight = require('./../../model/freightModel');
 dotenv.config({ path: '../../config.env' });
+const Truck = require('./../../model/truckModel');
 
 mongoose.connect(process.env.DATABASE_LOCAL, {
 }).then(() => console.log('Local database connection successfull!')).catch(err => {
   console.log("ERROR: " + err);
 });
 
-const freights = JSON.parse(
+const freight = JSON.parse(
   fs.readFileSync(`${__dirname}/freights.json`, 'utf-8')
 );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    await Freight.create(freights);
+    await Freight.create(trucks);
     // await Tour.create(interns);
     console.log('Data successfully loaded!');
   } catch (err) {
@@ -28,7 +29,7 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    await Tour.deleteMany();
+    await Freight.deleteMany();
     // await Tour.deleteMany();
     console.log('Data successfully deleted!');
   } catch (err) {
