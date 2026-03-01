@@ -27,8 +27,8 @@ exports.getAllTrucks = catchAsync(async (req, res) => {
 
 // --------------- CREATE TRUCK ---------------//
 exports.createTruck = catchAsync(async (req, res, next) => {
-  if(!req.body.truckOwner) req.body.truckOwner = req.user.id;
-   const newTruck = await Truck.create({
+  if (!req.body.truckOwner) req.body.truckOwner = req.user.id;
+  const newTruck = await Truck.create({
     ...req.body,
     truckOwner: req.body.truckOwner,
   });
@@ -46,7 +46,7 @@ exports.createTruck = catchAsync(async (req, res, next) => {
 exports.getTruck = catchAsync(async (req, res) => {
   const truck = await Truck.findById(req.params.id).populate(
     "truckOwner",
-    "firstName lastName phone",
+    "firstName lastName phone ratingQuantity ratingAverage",
   );
   res.status(200).json({
     statusCode: 200,
@@ -128,25 +128,15 @@ exports.deleteTruck = catchAsync(async (req, res, next) => {
     return next(new AppError("Truck not found", 404));
   }
 
-  // 3️⃣ Authorization → only owner or admin
-  if (
-    truck.truckOwner.toString() !== req.user.id &&
-    req.user.role !== "admin"
-  ) {
-    return next(new AppError("You are not allowed to delete this truck", 403));
-  }
-
   // 4️⃣ Business rule → prevent deletion if assigned
   if (!truck.isAvailable) {
     return next(new AppError("Truck is currently assigned to a booking", 400));
   }
 
-  // 5️⃣ Soft delete
-  truck.isActive = false;
-  await truck.save();
+  await Truck.findByIdAndDelete(id);
 
   // 6️⃣ Proper response
-  res.status(200).json({
+  res.status(204).json({
     statusCode: 200,
     message: "Truck successfully deleted",
   });

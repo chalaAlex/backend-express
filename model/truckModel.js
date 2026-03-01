@@ -39,12 +39,12 @@ const truckSchema = new mongoose.Schema(
       min: 0,
     },
 
-    features: {
-      type: String,
-      required: true,
-      enum: ["flatbed", "refrigerated", "dryVan"],
-      lowercase: true,
-    },
+    features: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
 
     location: {
       type: String,
@@ -63,6 +63,11 @@ const truckSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+    aboutTruck: { 
+      type: String,
+      required: true,
+      max: 150,
+    },
     isAvailable: {
       type: Boolean,
       default: true,
