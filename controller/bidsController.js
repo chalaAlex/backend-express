@@ -7,6 +7,20 @@ const APIFeatures = require("../utils/apiFeatures");
 const filterObj = require("../utils/filterObj");
 const { Types } = require("mongoose");
 
+// --------------------------- GET ALL BID -----------------------//
+exports.getAllBid = catchAsync(async (req, res) => {
+  let filter = {};
+  if (req.params.freightId) filter = { freightId: req.params.freightId };
+  const bids = await Bids.find(filter);
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Successfully retrieved all bids",
+    total: bids.length,
+    data: bids,
+  });
+});
+
 // ---------------------------- CREATE BID -----------------------//
 exports.createBid = catchAsync(async (req, res, next) => {
   if (!req.body.carrierOwnerId) req.body.carrierOwnerId = req.user.id;
@@ -97,20 +111,6 @@ exports.createBid = catchAsync(async (req, res, next) => {
     data: {
       bid: newBid,
     },
-  });
-});
-
-// --------------------------- GET ALL BID -----------------------//
-exports.getAllBid = catchAsync(async (req, res) => {
-  let filter = {};
-  if(req.params.freightId) filter = { freightId: req.params.freightId };
-  const bids = await Bids.find(filter);
-
-  res.status(200).json({
-    statusCode: 200,
-    message: "Successfully retrieved all bids",
-    total: bids.length,
-    data: bids,
   });
 });
 

@@ -27,7 +27,8 @@ exports.getAllTrucks = catchAsync(async (req, res) => {
 
 // --------------- CREATE TRUCK ---------------//
 exports.createTruck = catchAsync(async (req, res, next) => {
-  if (!req.body.truckOwner) req.body.truckOwner = req.user.id;
+  if (!req.body.truckOwner) req.body.truckOwner = req.user.id || req.params.userId;
+  console.log(req.params.userId);
   const newTruck = await Truck.create({
     ...req.body,
     truckOwner: req.body.truckOwner,
