@@ -60,11 +60,11 @@ exports.getTruck = catchAsync(async (req, res) => {
 });
 
 exports.getFeatured = catchAsync(async (req, res) => {
-  const featuredCarrier = Carrier.find({ isFeatured: true });
+  const featuredCarrier = await Carrier.find({ isFeatured: true });
 
   res.status(200).json({
     status: "success",
-    results: trucks.length,
+    results: featuredCarrier.length,
     data: {
       featuredCarrier,
     },
