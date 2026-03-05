@@ -1,14 +1,12 @@
 const express = require("express");
 const userController = require("./../controller/userController");
 const authController = require("./../controller/authController");
-// TODO: Import truck router.
-const truckRouter = require("./../routes/truckRoutes");
-
+const carrierRouter = require("./../routes/carrierRoutes");
 
 // 3) ROUTES
 const router = express.Router();
 
-router.use("/:userId/truck", truckRouter);
+router.use("/:userId/truck", carrierRouter);
 
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);

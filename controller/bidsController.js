@@ -1,11 +1,12 @@
 const Bids = require("../model/bidsModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const Freight = require("../model/freightModel");
-const Truck = require("../model/truckModel");
 const APIFeatures = require("../utils/apiFeatures");
-const filterObj = require("../utils/filterObj");
 const { Types } = require("mongoose");
+
+const Freight = require("../model/freightModel");
+const Carrier = require("../model/carrierModel");
+const filterObj = require("../utils/filterObj");
 
 // --------------------------- GET ALL BID -----------------------//
 exports.getAllBid = catchAsync(async (req, res) => {

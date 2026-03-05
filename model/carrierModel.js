@@ -1,12 +1,37 @@
 const mongoose = require("mongoose");
 const { Types } = mongoose;
 
+const OperatingCorrider = new mongoose.Schema({
+  startLocation: {
+    type: String,
+    default: "Addis Abeba",
+  },
+
+  destinationLocation: {
+    type: String,
+    required: true,
+  },
+});
+
 const truckSchema = new mongoose.Schema(
   {
     truckOwner: {
       type: Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    // // ADDING FEATURE
+    driver: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    company: {
+      type: Types.ObjectId,
+      ref: "Company",
     },
 
     model: {
@@ -27,12 +52,6 @@ const truckSchema = new mongoose.Schema(
       trim: true,
     },
 
-    pricePerKm: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
     loadCapacity: {
       type: Number,
       required: true,
@@ -46,32 +65,36 @@ const truckSchema = new mongoose.Schema(
       },
     ],
 
-    location: {
-      type: String,
-      trim: true,
+    operatingCorrider: {
+      type: OperatingCorrider,
       required: true,
     },
 
-    radiusKm: {
-      type: Number,
-      // required: true,
-      min: 0,
-    },
     image: [
       {
         type: String,
         trim: true,
       },
     ],
-    aboutTruck: { 
+
+    aboutTruck: {
       type: String,
       required: true,
       max: 150,
     },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     isAvailable: {
       type: Boolean,
       default: true,
       index: true, // Frequently queried field
+    },
+    isFeatured: {
+      type: Boolean,
     },
   },
   {
