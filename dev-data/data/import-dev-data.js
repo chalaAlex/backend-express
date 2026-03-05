@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const Freight = require("./../../model/freightModel");
 dotenv.config({ path: "../../config.env" });
 const Carrier = require("./../../model/carrierModel");
+const Company = require("./../../model/companyModel");
 
 mongoose
   .connect(process.env.DATABASE_LOCAL, {})
@@ -12,14 +13,14 @@ mongoose
     console.log("ERROR: " + err);
   });
 
-const carrier = JSON.parse(
-  fs.readFileSync(`${__dirname}/carriers.json`, "utf-8"),
+const company = JSON.parse(
+  fs.readFileSync(`${__dirname}/company.json`, "utf-8"),
 );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    await Carrier.create(carrier);
+    await Company.create(company);
     // await Tour.create(interns);
     console.log("Data successfully loaded!");
   } catch (err) {
@@ -31,7 +32,7 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    await Carrier.deleteMany();
+    await Company.deleteMany();
     // await Tour.deleteMany();
     console.log("Data successfully deleted!");
   } catch (err) {
