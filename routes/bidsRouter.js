@@ -1,7 +1,7 @@
 const express = require("express");
-const biddingController = require("../controller/bidsController");
 const authController = require("../controller/authController");
 const router = express.Router( { mergeParams: true } );
+const biddingController = require("../controller/bidsController");
 
 router
   .route("/")

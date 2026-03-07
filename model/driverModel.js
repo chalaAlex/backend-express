@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const User = require("../model/userModel");
+
 const driverSchema = new mongoose.Schema({
   licenseNumber: {
     type: String,
@@ -17,4 +20,4 @@ const driverSchema = new mongoose.Schema({
   },
 });
 
-const Driver = User.discriminator("driver", driverSchema);
+const Driver = User.discriminator("Driver", driverSchema);

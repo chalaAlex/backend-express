@@ -174,6 +174,3 @@ FreightSchema.virtual("bids", {
 // });
 
 module.exports = mongoose.model("Freight", FreightSchema);
-
-
-

@@ -21,7 +21,6 @@ const truckSchema = new mongoose.Schema(
       required: true,
     },
 
-    // // ADDING FEATURE
     driver: [
       {
         type: Types.ObjectId,

@@ -5,7 +5,7 @@ const filterObj = require("../utils/filterObj");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 
-// --------------- GET ALL TRUCKS ---------------//
+// -------------------- GET ALL TRUCKS --------------------//
 exports.getAllTrucks = catchAsync(async (req, res) => {
   const feature = new APIFeatures(Carrier.find(), req.query)
     .filter()
@@ -25,7 +25,7 @@ exports.getAllTrucks = catchAsync(async (req, res) => {
   });
 });
 
-// --------------- CREATE carrier ---------------//
+// ------------------- CREATE carrier ---------------------//
 exports.createCarrier = catchAsync(async (req, res, next) => {
   if (!req.body.truckOwner)
     req.body.truckOwner = req.user.id || req.params.userId;
@@ -44,7 +44,7 @@ exports.createCarrier = catchAsync(async (req, res, next) => {
   });
 });
 
-// --------------- GET carrier ---------------//
+// -------------------- GET carrier ----------------------//
 exports.getTruck = catchAsync(async (req, res) => {
   const carrier = await Carrier.findById(req.params.id).populate(
     "truckOwner",
@@ -59,6 +59,7 @@ exports.getTruck = catchAsync(async (req, res) => {
   });
 });
 
+// --------------- GET Featured carrier ------------------//
 exports.getFeatured = catchAsync(async (req, res) => {
   const featuredCarrier = await Carrier.find({ isFeatured: true });
 
@@ -71,7 +72,7 @@ exports.getFeatured = catchAsync(async (req, res) => {
   });
 });
 
-// --------------- GET carrier by USER_ID ---------------//
+// --------------- GET carrier by USER_ID ----------------//
 exports.getMyTrucks = catchAsync(async (req, res) => {
   console.log("get my carrier called");
   console.log(req.user.id);
@@ -85,8 +86,7 @@ exports.getMyTrucks = catchAsync(async (req, res) => {
     },
   });
 });
-
-// --------------- UPDATE carrier ---------------//
+// --------------------- UPDATE carrier ------------------//
 exports.updateTruck = catchAsync(async (req, res, next) => {
   const allowedFields = [
     "model",
@@ -128,7 +128,7 @@ exports.updateTruck = catchAsync(async (req, res, next) => {
   });
 });
 
-// --------------- DELETE carrier ---------------//
+// --------------------- DELETE carrier ------------------//
 exports.deleteTruck = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
@@ -157,5 +157,99 @@ exports.deleteTruck = catchAsync(async (req, res, next) => {
   res.status(204).json({
     statusCode: 200,
     message: "Carrier successfully deleted",
+  });
+});
+
+// --------------- make favourite carrier ----------------//
+exports.makeFavourite = catchAsync(async (req, res, next) => {
+  if (!req.body.id) req.body.id = req.params.id;
+
+  const carrierFavourite = await Carrier.findByIdAndUpdate(
+    req.body.id,
+    { isFavourite: true },
+    { new: true, runValidators: true },
+  );
+
+  if (!carrierFavourite) {
+    return next(new AppError("No carrier is found with that id", 404));
+  }
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Carrier marked as favourite",
+    data: {
+      carrier: carrierFavourite,
+    },
+  });
+});
+
+// --------------- disable Favourite carrier -------------//
+exports.disableFavourite = catchAsync(async (req, res, next) => {
+  if (!req.body.id) req.body.id = req.params.id;
+
+  const carrierFavourite = await Carrier.findByIdAndUpdate(
+    req.body.id,
+    { isFavourite: false },
+    { new: true, runValidators: true },
+  );
+
+  if (!carrierFavourite) {
+    return next(new AppError("No carrier is found with that id", 404));
+  }
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Carrier removed from favourite",
+    data: {
+      carrier: carrierFavourite,
+    },
+  });
+});
+
+// --------------- verify carrier -------------//
+exports.verifyCarrier = catchAsync(async (req, res, next) => {
+  if (!req.body.id) req.body.id = req.params.id;
+
+  console.log(req.body.id);
+
+  const carrier = await Carrier.findByIdAndUpdate(
+    req.body.id,
+    { isVerified: true },
+    { new: true, runValidators: true },
+  );
+
+  if (!carrier) {
+    return next(new AppError("No carrier is found with that id", 404));
+  }
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Carrier successfully verified",
+    data: {
+      carrier,
+    },
+  });
+});
+
+// --------------- unverify carrier -------------//
+exports.unverifyCarrier = catchAsync(async (req, res, next) => {
+  if (!req.body.id) req.body.id = req.params.id;
+
+  const carrier = await Carrier.findByIdAndUpdate(
+    req.body.id,
+    { isVerified: false },
+    { new: true, runValidators: true },
+  );
+
+  if (!carrier) {
+    return next(new AppError("No carrier is found with that id", 404));
+  }
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Carrier successfully unverified",
+    data: {
+      carrier,
+    },
   });
 });

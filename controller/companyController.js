@@ -56,3 +56,49 @@ exports.getFeaturedCompany = catchAsync(async (req, res) => {
     },
   });
 });
+
+exports.getRecommendedCompanies = catchAsync(async (req, res) => {
+  const companies = await Company.aggregate([
+    {
+      $addFields: {
+        score: {
+          $add: [
+            { $multiply: ["$ratingAverage", 3] },
+
+            {
+              $log: [{ $add: ["$completedShipments", 1] }, 10],
+            },
+
+            { $multiply: ["$fleetSize", 0.5] },
+
+            { $cond: ["$verified", 5, 0] },
+          ],
+        },
+      },
+    },
+    { $sort: { score: -1 } },
+    { $limit: 10 },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    results: companies.length,
+    data: { companies },
+  });
+});
+
+// exports.getRecommendedCompanies = catchAsync(async (req, res) => {
+//   const companies = await Company.find()
+//   .sort({
+//     verified: -1,
+//     ratingAverage: -1,
+//     completedShipments: -1
+//   })
+//   .limit(10);
+
+//   res.status(200).json({
+//     status: "success",
+//     results: companies.length,
+//     data: { companies },
+//   });
+// });

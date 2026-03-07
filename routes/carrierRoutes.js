@@ -5,7 +5,7 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  // .get(authController.protect, carrierController.getAllTrucks)
+  .get(authController.protect, carrierController.getAllTrucks)
   .post(
     authController.protect,
     authController.restrictTo("carrier_owner"),
@@ -25,6 +25,22 @@ router
     authController.protect,
     authController.restrictTo("admin"),
     carrierController.deleteTruck,
+  );
+
+router
+  .route("/:id/verifyCarrier")
+  .patch(
+    authController.protect,
+    // authController.restrictTo("admin"),
+    carrierController.verifyCarrier,
+  );
+
+router
+  .route("/:id/unverifyCarrier")
+  .patch(
+    authController.protect,
+    // authController.restrictTo("admin"),
+    carrierController.unverifyCarrier,
   );
 
 module.exports = router;

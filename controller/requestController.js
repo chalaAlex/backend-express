@@ -55,7 +55,7 @@ exports.createRequests = catchAsync(async (req, res, next) => {
   for (const carrierId of carrierIds) {
     try {
       // Fetch truck (carrier)
-      const truck = await Truck.findById(carrierId);
+      const truck = await Carrier.findById(carrierId);
 
       if (!truck) {
         errors.push({

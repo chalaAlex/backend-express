@@ -12,6 +12,8 @@ const biddingRouter = require("./routes/bidsRouter");
 const locationRouter = require("./routes/locationRouter");
 const cargoTypeRouter = require("./routes/cargoType");
 const requestRouter = require("./routes/requestRoutes");
+const companyRouter = require("./routes/companyRoute");
+const driverRouter = require("./routes/driverRoute");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -32,6 +34,9 @@ app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/bid", biddingRouter);
 app.use("/api/v1/requests", requestRouter);
 app.use("/api/v1/cargoType", cargoTypeRouter);
+app.use("/api/v1/companies", companyRouter);
+app.use("/api/v1/driver", driverRouter);
+
 app.use("/api", distanceRouter);
 
 module.exports = app;
