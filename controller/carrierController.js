@@ -5,8 +5,8 @@ const filterObj = require("../utils/filterObj");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 
-// -------------------- GET ALL TRUCKS --------------------//
-exports.getAllTrucks = catchAsync(async (req, res) => {
+// -------------------- GET ALL carriers --------------------//
+exports.getAllCarriers = catchAsync(async (req, res) => {
   const feature = new APIFeatures(Carrier.find(), req.query)
     .filter()
     .sort()
@@ -17,10 +17,10 @@ exports.getAllTrucks = catchAsync(async (req, res) => {
 
   res.status(200).json({
     statusCode: 200,
-    message: "Successfully retrived all trucks",
+    message: "Successfully retrived all carriers",
     total: carrier.length,
     data: {
-      trucks: carrier,
+      carriers: carrier,
     },
   });
 });
@@ -30,7 +30,7 @@ exports.createCarrier = catchAsync(async (req, res, next) => {
   if (!req.body.truckOwner)
     req.body.truckOwner = req.user.id || req.params.userId;
   console.log(req.params.userId);
-  const newTruck = await Carrier.create({
+  const newCarrier = await Carrier.create({
     ...req.body,
     truckOwner: req.body.truckOwner,
   });
@@ -39,13 +39,13 @@ exports.createCarrier = catchAsync(async (req, res, next) => {
     statusCode: 201,
     message: "Successfully created carrier",
     data: {
-      carrier: newTruck,
+      carrier: newCarrier,
     },
   });
 });
 
 // -------------------- GET carrier ----------------------//
-exports.getTruck = catchAsync(async (req, res) => {
+exports.getCarrier = catchAsync(async (req, res) => {
   const carrier = await Carrier.findById(req.params.id).populate(
     "truckOwner",
     "firstName lastName phone ratingQuantity ratingAverage",
@@ -64,7 +64,8 @@ exports.getFeatured = catchAsync(async (req, res) => {
   const featuredCarrier = await Carrier.find({ isFeatured: true });
 
   res.status(200).json({
-    status: "success",
+    statusCode: 200,
+    message: "Featured carriers successfully retrieved",
     results: featuredCarrier.length,
     data: {
       featuredCarrier,
@@ -73,21 +74,22 @@ exports.getFeatured = catchAsync(async (req, res) => {
 });
 
 // --------------- GET carrier by USER_ID ----------------//
-exports.getMyTrucks = catchAsync(async (req, res) => {
+exports.getMyCarriers = catchAsync(async (req, res) => {
   console.log("get my carrier called");
   console.log(req.user.id);
-  const trucks = await Carrier.find({ truckOwner: req.user.id });
+  const carriers = await Carrier.find({ truckOwner: req.user.id });
 
   res.status(200).json({
-    status: "success",
-    results: trucks.length,
+    statusCode: 200,
+    message: "Carriers succesfully fetched",
+    results: carriers.length,
     data: {
-      trucks,
+      carriers,
     },
   });
 });
 // --------------------- UPDATE carrier ------------------//
-exports.updateTruck = catchAsync(async (req, res, next) => {
+exports.updateCarrier = catchAsync(async (req, res, next) => {
   const allowedFields = [
     "model",
     "plateNumber",
@@ -129,7 +131,7 @@ exports.updateTruck = catchAsync(async (req, res, next) => {
 });
 
 // --------------------- DELETE carrier ------------------//
-exports.deleteTruck = catchAsync(async (req, res, next) => {
+exports.deleteCarrier = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
   // 1️⃣ Validate Mongo ID

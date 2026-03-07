@@ -1,8 +1,8 @@
 [
   {
-    "_id": "66f1a2b3c4d5e6f701111111",
+    "_id": "66f1a2b3c4d5e6f701000001",
     "truckOwner": "66f1a2b3c4d5e6f700000001",
-    "driver": [],
+    "driver": ["66f1a2b3c4d5e6f700000201"],
     "company": "66f1a2b3c4d5e6f700000100",
     "model": "FH16",
     "plateNumber": "AA-45678",
@@ -13,7 +13,7 @@
       "Refrigerated Container",
       "Air Suspension"
     ],
-    "location": {
+    "operatingCorrider": {
       "startLocation": "Addis Abeba",
       "destinationLocation": "Dire Dawa"
     },
@@ -21,98 +21,121 @@
       "https://example.com/trucks/volvo_fh16_1.jpg",
       "https://example.com/trucks/volvo_fh16_2.jpg"
     ],
-    "aboutTruck": "Heavy duty refrigerated truck suitable for long distance cargo.",
+    "aboutTruck": "Heavy-duty refrigerated Volvo truck suitable for long-distance cargo transport.",
+    "isVerified": true,
     "isAvailable": true,
     "isFeatured": true,
-    "createdAt": "2026-03-05T10:00:00.000Z",
-    "updatedAt": "2026-03-05T10:00:00.000Z"
+    "createdAt": "2026-03-01T10:00:00.000Z",
+    "updatedAt": "2026-03-01T10:00:00.000Z"
   },
-
   {
-    "_id": "66f1a2b3c4d5e6f701111112",
+    "_id": "66f1a2b3c4d5e6f701000002",
     "truckOwner": "66f1a2b3c4d5e6f700000002",
-    "driver": [
-      "66f1a2b3c4d5e6f700000010"
-    ],
-    "company": null,
-    "model": "Actros 2645",
-    "plateNumber": "OR-22345",
+    "driver": ["66f1a2b3c4d5e6f700000202"],
+    "company": "66f1a2b3c4d5e6f700000101",
+    "model": "Actros 2545",
+    "plateNumber": "OR-99821",
     "brand": "Mercedes-Benz",
-    "loadCapacity": 25000,
+    "loadCapacity": 28000,
     "features": [
-      "Fuel Efficient",
-      "GPS Tracking"
+      "ABS Braking",
+      "GPS Tracking",
+      "Cargo Camera"
     ],
-    "location": {
-      "startLocation": "Addis Abeba",
-      "destinationLocation": "Hawassa"
+    "operatingCorrider": {
+      "startLocation": "Adama",
+      "destinationLocation": "Djibouti"
     },
     "image": [
       "https://example.com/trucks/actros_1.jpg"
     ],
-    "aboutTruck": "Reliable truck ideal for medium to heavy logistics transport.",
+    "aboutTruck": "Reliable Mercedes Actros truck frequently used for import and export cargo transport.",
+    "isVerified": true,
     "isAvailable": true,
-    "isFeatured": false,
-    "createdAt": "2026-03-05T10:15:00.000Z",
-    "updatedAt": "2026-03-05T10:15:00.000Z"
+    "isFeatured": true,
+    "createdAt": "2026-03-02T11:00:00.000Z",
+    "updatedAt": "2026-03-02T11:00:00.000Z"
   },
-
   {
-    "_id": "66f1a2b3c4d5e6f701111113",
+    "_id": "66f1a2b3c4d5e6f701000003",
     "truckOwner": "66f1a2b3c4d5e6f700000003",
-    "driver": [
-      "66f1a2b3c4d5e6f700000011",
-      "66f1a2b3c4d5e6f700000012"
-    ],
-    "company": "66f1a2b3c4d5e6f700000101",
-    "model": "Scania R500",
-    "plateNumber": "AA-88901",
-    "brand": "Scania",
-    "loadCapacity": 32000,
+    "driver": ["66f1a2b3c4d5e6f700000203"],
+    "company": "66f1a2b3c4d5e6f700000102",
+    "model": "XF 480",
+    "plateNumber": "AM-34567",
+    "brand": "DAF",
+    "loadCapacity": 26000,
     "features": [
       "GPS Tracking",
-      "High Horsepower Engine",
-      "Sleeper Cabin"
-    ],
-    "location": {
-      "startLocation": "Addis Abeba",
-      "destinationLocation": "Mekelle"
-    },
-    "image": [
-      "https://example.com/trucks/scania_r500_1.jpg",
-      "https://example.com/trucks/scania_r500_2.jpg"
-    ],
-    "aboutTruck": "Powerful long-haul truck designed for heavy freight transportation.",
-    "isAvailable": false,
-    "isFeatured": true,
-    "createdAt": "2026-03-05T11:00:00.000Z",
-    "updatedAt": "2026-03-05T11:00:00.000Z"
-  },
-
-  {
-    "_id": "66f1a2b3c4d5e6f701111114",
-    "truckOwner": "66f1a2b3c4d5e6f700000004",
-    "driver": [],
-    "company": null,
-    "model": "Hino 700",
-    "plateNumber": "AM-55221",
-    "brand": "Hino",
-    "loadCapacity": 20000,
-    "features": [
-      "Fuel Efficient",
       "Air Suspension"
     ],
-    "location": {
-      "startLocation": "Addis Abeba",
-      "destinationLocation": "Bahir Dar"
+    "operatingCorrider": {
+      "startLocation": "Bahir Dar",
+      "destinationLocation": "Addis Abeba"
     },
     "image": [
-      "https://example.com/trucks/hino700_1.jpg"
+      "https://example.com/trucks/daf_xf.jpg"
     ],
-    "aboutTruck": "Durable truck for transporting agricultural goods and materials.",
+    "aboutTruck": "Efficient cargo truck for transporting agricultural goods and general freight.",
+    "isVerified": false,
     "isAvailable": true,
     "isFeatured": false,
-    "createdAt": "2026-03-05T11:20:00.000Z",
-    "updatedAt": "2026-03-05T11:20:00.000Z"
+    "createdAt": "2026-03-03T08:00:00.000Z",
+    "updatedAt": "2026-03-03T08:00:00.000Z"
+  },
+  {
+    "_id": "66f1a2b3c4d5e6f701000004",
+    "truckOwner": "66f1a2b3c4d5e6f700000004",
+    "driver": ["66f1a2b3c4d5e6f700000204"],
+    "company": "66f1a2b3c4d5e6f700000103",
+    "model": "FMX 420",
+    "plateNumber": "TI-88234",
+    "brand": "Volvo",
+    "loadCapacity": 32000,
+    "features": [
+      "Heavy Duty Suspension",
+      "GPS Tracking"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Mekelle",
+      "destinationLocation": "Kombolcha"
+    },
+    "image": [
+      "https://example.com/trucks/volvo_fmx.jpg"
+    ],
+    "aboutTruck": "Powerful Volvo FMX truck designed for heavy construction and industrial loads.",
+    "isVerified": true,
+    "isAvailable": false,
+    "isFeatured": false,
+    "createdAt": "2026-03-04T09:30:00.000Z",
+    "updatedAt": "2026-03-04T09:30:00.000Z"
+  },
+  {
+    "_id": "66f1a2b3c4d5e6f701000005",
+    "truckOwner": "66f1a2b3c4d5e6f700000005",
+    "driver": ["66f1a2b3c4d5e6f700000205"],
+    "company": "66f1a2b3c4d5e6f700000104",
+    "model": "TGS 26.440",
+    "plateNumber": "AA-77890",
+    "brand": "MAN",
+    "loadCapacity": 25000,
+    "features": [
+      "Fuel Efficient Engine",
+      "GPS Tracking",
+      "Cargo Monitoring"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Hawassa",
+      "destinationLocation": "Addis Abeba"
+    },
+    "image": [
+      "https://example.com/trucks/man_tgs.jpg"
+    ],
+    "aboutTruck": "Modern MAN cargo truck suitable for medium and long haul transportation.",
+    "isVerified": false,
+    "isAvailable": true,
+    "isFeatured": true,
+    "createdAt": "2026-03-05T12:00:00.000Z",
+    "updatedAt": "2026-03-05T12:00:00.000Z"
   }
 ]

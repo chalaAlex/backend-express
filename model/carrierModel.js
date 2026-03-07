@@ -102,4 +102,4 @@ const truckSchema = new mongoose.Schema(
   },
 );
 
-module.exports = mongoose.model("Truck", truckSchema);
+module.exports = mongoose.model("Carrier", truckSchema);
