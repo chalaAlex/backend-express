@@ -114,7 +114,7 @@ exports.updateCarrier = catchAsync(async (req, res, next) => {
   // Ownership check
   if (carrier.truckOwner.toString() !== req.user.id) {
     return next(
-      new AppError("You are not allowed to delete this carrier", 403),
+      new AppError("You are not allowed to update this carrier", 403),
     );
   }
 

@@ -5,43 +5,135 @@ const APIFeatures = require("../utils/apiFeatures");
 const { Types } = require("mongoose");
 
 exports.getAllCompany = catchAsync(async (req, res) => {
+  const features = new APIFeatures(Company.find(), req.query)
+    .filter()
+    .sort()
+    .paginate();
+
+  const companies = await features.query;
+
   res.status(200).json({
     statusCode: 200,
-    message: "getAll company controller is not implmented yet",
-    total: bids.length,
-    data: bids,
+    message: "Successfully retrieved all companies",
+    total: companies.length,
+    data: {
+      companies,
+    },
   });
 });
 
 exports.registerCompany = catchAsync(async (req, res, next) => {
-  res.status(201).json({
-    statusCode: 201,
-    message: "Create company controller is not implmented yet",
-    data: {},
-  });
+  if (
+    req.body.primaryContactPerson &&
+    !Types.ObjectId.isValid(req.body.primaryContactPerson)
+  ) {
+    return next(new AppError("Invalid primaryContactPerson id", 400));
+  }
+
+  const companyData = { ...req.body };
+  if (!companyData.primaryContactPerson && req.user?._id) {
+    companyData.primaryContactPerson = req.user._id;
+  }
+
+  try {
+    const company = await Company.create(companyData);
+
+    res.status(201).json({
+      statusCode: 201,
+      message: "Company registered successfully",
+      data: {
+        company,
+      },
+    });
+  } catch (error) {
+    if (error?.code === 11000) {
+      const duplicateField = Object.keys(error.keyValue || {})[0] || "field";
+      return next(new AppError(`${duplicateField} already exists`, 400));
+    }
+    return next(error);
+  }
 });
 
 exports.getCompany = catchAsync(async (req, res, next) => {
-  res.status(201).json({
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid company id", 400));
+  }
+
+  const company = await Company.findById(id)
+    .populate("primaryContactPerson", "firstName lastName phone email");
+
+  if (!company) {
+    return next(new AppError("Company not found", 404));
+  }
+
+  res.status(200).json({
     statusCode: 200,
-    message: "get company company controller is not implmented yet",
-    data: {},
+    message: "Company retrieved successfully",
+    data: {
+      company,
+    },
   });
 });
 
 exports.updateCompany = catchAsync(async (req, res, next) => {
-  res.status(201).json({
-    statusCode: 201,
-    message: "updateCompany company controller is not implmented yet",
-    data: {},
-  });
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid company id", 400));
+  }
+
+  if (
+    req.body.primaryContactPerson &&
+    !Types.ObjectId.isValid(req.body.primaryContactPerson)
+  ) {
+    return next(new AppError("Invalid primaryContactPerson id", 400));
+  }
+
+  try {
+    const company = await Company.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    }).populate("primaryContactPerson", "firstName lastName phone email");
+
+    if (!company) {
+      return next(new AppError("Company not found", 404));
+    }
+
+    res.status(200).json({
+      statusCode: 200,
+      message: "Company updated successfully",
+      data: {
+        company,
+      },
+    });
+  } catch (error) {
+    if (error?.code === 11000) {
+      const duplicateField = Object.keys(error.keyValue || {})[0] || "field";
+      return next(new AppError(`${duplicateField} already exists`, 400));
+    }
+    return next(error);
+  }
 });
 
 exports.deleteCompany = catchAsync(async (req, res, next) => {
-  res.status(201).json({
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid company id", 400));
+  }
+
+  const company = await Company.findByIdAndDelete(id);
+
+  if (!company) {
+    return next(new AppError("Company not found", 404));
+  }
+
+  res.status(204).json({
     statusCode: 204,
-    message: "deleteCompany company controller is not implmented yet",
-    data: {},
+    message: "Company deleted successfully",
+    data: null,
   });
 });
 
