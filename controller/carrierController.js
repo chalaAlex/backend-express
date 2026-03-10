@@ -1,11 +1,13 @@
 const Carrier = require("./../model/carrierModel");
+const Company = require("./../model/companyModel");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const filterObj = require("../utils/filterObj");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
+const User = require("./../model/userModel");
 
-// -------------------- GET ALL carriers --------------------//
+// -------------------- GET ALL carriers -----------------//
 exports.getAllCarriers = catchAsync(async (req, res) => {
   const feature = new APIFeatures(Carrier.find(), req.query)
     .filter()
@@ -25,7 +27,7 @@ exports.getAllCarriers = catchAsync(async (req, res) => {
   });
 });
 
-// ------------------- CREATE carrier ---------------------//
+// ------------------- CREATE carrier --------------------//
 exports.createCarrier = catchAsync(async (req, res, next) => {
   if (!req.body.truckOwner)
     req.body.truckOwner = req.user.id || req.params.userId;
@@ -208,7 +210,7 @@ exports.disableFavourite = catchAsync(async (req, res, next) => {
   });
 });
 
-// --------------- verify carrier -------------//
+// ---------------------- verify carrier -----------------//
 exports.verifyCarrier = catchAsync(async (req, res, next) => {
   if (!req.body.id) req.body.id = req.params.id;
 
@@ -233,7 +235,7 @@ exports.verifyCarrier = catchAsync(async (req, res, next) => {
   });
 });
 
-// --------------- unverify carrier -------------//
+// -------------------- unverify carrier -----------------//
 exports.unverifyCarrier = catchAsync(async (req, res, next) => {
   if (!req.body.id) req.body.id = req.params.id;
 
@@ -252,6 +254,184 @@ exports.unverifyCarrier = catchAsync(async (req, res, next) => {
     message: "Carrier successfully unverified",
     data: {
       carrier,
+    },
+  });
+});
+
+exports.assignCarrierToCompany = catchAsync(async (req, res, next) => {
+  const carrierId = req.params.carrierId || req.params.id || req.body.carrierId;
+  const companyId = req.params.companyId || req.body.companyId;
+
+  if (!carrierId) {
+    return next(new AppError("Carrier id is required", 400));
+  }
+
+  if (!companyId) {
+    return next(new AppError("Company id is required", 400));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(carrierId)) {
+    return next(new AppError("Invalid carrier id", 400));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(companyId)) {
+    return next(new AppError("Invalid company id", 400));
+  }
+
+  const [carrier, companyExists] = await Promise.all([
+    Carrier.findById(carrierId).select("_id company").lean(),
+    Company.exists({ _id: companyId }),
+  ]);
+
+  if (!carrier) {
+    return next(new AppError("No carrier is found with that id", 404));
+  }
+
+  if (!companyExists) {
+    return next(new AppError("No company is found with that id", 404));
+  }
+
+  const updates = [
+    Company.updateOne(
+      { _id: companyId, carrier: { $ne: carrierId } },
+      {
+        $addToSet: { carrier: carrierId },
+        $inc: { fleetSize: 1 },
+      },
+    ),
+    Carrier.findByIdAndUpdate(
+      carrierId,
+      { company: companyId },
+      { new: true, runValidators: true },
+    ),
+  ];
+
+  if (carrier.company && carrier.company.toString() !== companyId) {
+    updates.push(
+      Company.updateOne(
+        { _id: carrier.company, carrier: carrierId },
+        { $pull: { carrier: carrierId }, $inc: { fleetSize: -1 } },
+      ),
+    );
+  }
+
+  const [, updatedCarrier] = await Promise.all(updates);
+  const updatedCompany = await Company.findById(companyId);
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Carrier assigned to company successfully",
+    data: {
+      company: updatedCompany,
+      carrier: updatedCarrier,
+    },
+  });
+});
+
+exports.assignDriverToCarrier = catchAsync(async (req, res, next) => {
+  const carrierId = req.params.carrierId || req.params.id || req.body.carrierId;
+  const driverId = req.params.driverId || req.body.driverId;
+
+  if (!carrierId) {
+    return next(new AppError("Carrier id is required", 400));
+  }
+
+  if (!driverId) {
+    return next(new AppError("Driver id is required", 400));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(carrierId)) {
+    return next(new AppError("Invalid carrier id", 400));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(driverId)) {
+    return next(new AppError("Invalid driver id", 400));
+  }
+
+  // Check if carrier exists
+  const carrier = await Carrier.findById(carrierId);
+  if (!carrier) {
+    return next(new AppError("No carrier is found with that id", 404));
+  }
+
+  // Check if driver exists and is actually a driver
+  const driver = await User.findOne({
+    _id: driverId,
+    role: "driver"
+  });
+
+  if (!driver) {
+    return next(new AppError("No driver is found with that id", 404));
+  }
+
+  // Check if driver is already assigned to this carrier
+  if (carrier.driver.includes(driverId)) {
+    return next(new AppError("Driver is already assigned to this carrier", 400));
+  }
+
+  // Add driver to carrier's driver array
+  carrier.driver.push(driverId);
+  await carrier.save();
+
+  // Populate the updated carrier with driver details
+  const updatedCarrier = await Carrier.findById(carrierId)
+    .populate("driver", "firstName lastName phone email licenseNumber licenseExpiry")
+    .populate("truckOwner", "firstName lastName phone");
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Driver assigned to carrier successfully",
+    data: {
+      carrier: updatedCarrier,
+    },
+  });
+});
+
+exports.removeDriverFromCarrier = catchAsync(async (req, res, next) => {
+  const carrierId = req.params.carrierId || req.params.id || req.body.carrierId;
+  const driverId = req.params.driverId || req.body.driverId;
+
+  if (!carrierId) {
+    return next(new AppError("Carrier id is required", 400));
+  }
+
+  if (!driverId) {
+    return next(new AppError("Driver id is required", 400));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(carrierId)) {
+    return next(new AppError("Invalid carrier id", 400));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(driverId)) {
+    return next(new AppError("Invalid driver id", 400));
+  }
+
+  // Check if carrier exists
+  const carrier = await Carrier.findById(carrierId);
+  if (!carrier) {
+    return next(new AppError("No carrier is found with that id", 404));
+  }
+
+  // Check if driver is assigned to this carrier
+  if (!carrier.driver.includes(driverId)) {
+    return next(new AppError("Driver is not assigned to this carrier", 400));
+  }
+
+  // Remove driver from carrier's driver array
+  carrier.driver = carrier.driver.filter(id => id.toString() !== driverId);
+  await carrier.save();
+
+  // Populate the updated carrier with driver details
+  const updatedCarrier = await Carrier.findById(carrierId)
+    .populate("driver", "firstName lastName phone email licenseNumber licenseExpiry")
+    .populate("truckOwner", "firstName lastName phone");
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Driver removed from carrier successfully",
+    data: {
+      carrier: updatedCarrier,
     },
   });
 });

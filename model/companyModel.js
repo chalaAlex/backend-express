@@ -33,6 +33,13 @@ const companyModel = new Schema(
       required: true,
     },
 
+    carrier: [
+      {
+        type: Types.ObjectId,
+        ref: "Carrier",
+      }
+    ],
+
     companyRegistrationNumber: {
       type: String,
       required: true,

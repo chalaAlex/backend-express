@@ -4,6 +4,38 @@ const authController = require("../controller/authController");
 
 const router = express.Router({ mergeParams: true });
 
-router.route("/").get(authController.protect, driverController.getAllDriver);
+// Routes that don't require ID parameter
+router
+  .route("/")
+  .get(authController.protect, driverController.getAllDriver)
+  .post(
+    authController.protect,
+    authController.restrictTo("admin", "carrier_owner"),
+    driverController.createDriver
+  );
+
+// Route for driver to get their assigned truck
+router
+  .route("/my-truck")
+  .get(
+    authController.protect,
+    authController.restrictTo("driver"),
+    driverController.getMyAssignedTruck
+  );
+
+// Routes that require ID parameter
+router
+  .route("/:id")
+  .get(authController.protect, driverController.getDriver)
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin", "carrier_owner"),
+    driverController.updateDriver
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo("admin"),
+    driverController.deleteDriver
+  );
 
 module.exports = router;

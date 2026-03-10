@@ -47,11 +47,11 @@ const userSchema = new mongoose.Schema(
         message: "Passwords are not the same!",
       },
     },
-    // role: {
-    //   type: String,
-    //   enum: ["freight_owner", "carrier_owner", "driver", "admin"],
-    //   default: "carrier_owner",
-    // },
+    role: {
+      type: String,
+      enum: ["freight_owner", "carrier_owner", "driver", "admin"],
+      default: "carrier_owner",
+    },
     ratingAverage: {
       type: Number,
       default: 4.5,

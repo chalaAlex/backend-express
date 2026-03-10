@@ -173,24 +173,63 @@ exports.getRecommendedCompanies = catchAsync(async (req, res) => {
   ]);
 
   res.status(200).json({
-    status: "success",
-    results: companies.length,
+    statusCode: 200,
+    message: "Recommended companies retrived successfully",
+    total: companies.length,
     data: { companies },
   });
 });
 
-// exports.getRecommendedCompanies = catchAsync(async (req, res) => {
-//   const companies = await Company.find()
-//   .sort({
-//     verified: -1,
-//     ratingAverage: -1,
-//     completedShipments: -1
-//   })
-//   .limit(10);
+exports.getTopRatedCompanies = catchAsync(async (req, res) => {
+  const companies = await Company.find({ isActive: true })
+    .sort({
+      ratingAverage: -1,
+      ratingQuantity: -1,
+      completedShipments: -1,
+    })
+    .limit(10);
 
-//   res.status(200).json({
-//     status: "success",
-//     results: companies.length,
-//     data: { companies },
-//   });
-// });
+  res.status(200).json({
+    statusCode: 200,
+    message: "Top rtaed companies successfuly retrieved",
+    total: companies.length,
+    data: { companies },
+  });
+});
+
+exports.getCompanyCarriers = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid company id", 400));
+  }
+
+  const company = await Company.findById(id)
+    .populate({
+      path: "carrier",
+      populate: {
+        path: "truckOwner",
+        select: "firstName lastName phone ratingQuantity ratingAverage"
+      }
+    })
+    .select("legalEntityName carrier fleetSize");
+
+  if (!company) {
+    return next(new AppError("Company not found", 404));
+  }
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Company carriers retrieved successfully",
+    total: company.carrier.length,
+    data: {
+      company: {
+        _id: company._id,
+        legalEntityName: company.legalEntityName,
+        fleetSize: company.fleetSize
+      },
+      carriers: company.carrier,
+    },
+  });
+});
+

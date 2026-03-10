@@ -15,8 +15,16 @@ router
 router
   .route("/getFeaturedCarier")
   .get(authController.protect, carrierController.getFeatured);
-  
+
 router.get("/my-trucks", authController.protect, carrierController.getMyCarriers);
+
+router
+  .route("/:companyId/assign-carrier/:carrierId")
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin, carrier_owner"),
+    carrierController.assignCarrierToCompany,
+  );
 
 router
   .route("/:id")
@@ -42,6 +50,22 @@ router
     authController.protect,
     authController.restrictTo("admin"),
     carrierController.unverifyCarrier,
+  );
+
+router
+  .route("/:carrierId/assign-driver/:driverId")
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin", "carrier_owner"),
+    carrierController.assignDriverToCarrier,
+  );
+
+router
+  .route("/:carrierId/remove-driver/:driverId")
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin", "carrier_owner"),
+    carrierController.removeDriverFromCarrier,
   );
 
 module.exports = router;

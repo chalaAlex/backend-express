@@ -11,7 +11,7 @@ const driverSchema = new mongoose.Schema({
 
   assignedTruck: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Truck",
+    ref: "Carrier",
   },
 
   carrierOwner: {
@@ -20,4 +20,6 @@ const driverSchema = new mongoose.Schema({
   },
 });
 
-const Driver = User.discriminator("Driver", driverSchema);
+const Driver = User.discriminator("driver", driverSchema);
+
+module.exports = Driver;
