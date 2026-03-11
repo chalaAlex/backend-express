@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Types } = mongoose;
 
-const OperatingCorrider = new mongoose.Schema({
+const OperatingCorriderSchema = new mongoose.Schema({
   startLocation: {
     type: String,
     default: "Addis Abeba",
@@ -65,7 +65,7 @@ const truckSchema = new mongoose.Schema(
     ],
 
     operatingCorrider: {
-      type: OperatingCorrider,
+      type: OperatingCorriderSchema,
       required: true,
     },
 

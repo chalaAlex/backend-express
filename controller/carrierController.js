@@ -1,5 +1,10 @@
 const Carrier = require("./../model/carrierModel");
 const Company = require("./../model/companyModel");
+const Region = require("./../model/regionModel");
+const City = require("./../model/cityModel");
+const Brand = require("./../model/brandModel");
+const Feature = require("./../model/featureModel");
+const CarrierType = require("./../model/carrierTypeModel");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const filterObj = require("../utils/filterObj");
@@ -9,20 +14,114 @@ const User = require("./../model/userModel");
 
 // -------------------- GET ALL carriers -----------------//
 exports.getAllCarriers = catchAsync(async (req, res) => {
-  const feature = new APIFeatures(Carrier.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
+  const {
+    company,
+    carrierType,
+    region,
+    city,
+    startLocation,
+    destinationLocation,
+    minLoadCapacity,
+    maxLoadCapacity,
+    brand,
+    features,
+    isAvailable,
+    isVerified,
+    search,
+    page = 1,
+    limit = 10,
+    sort = "-createdAt",
+  } = req.query;
 
-  const carrier = await feature.query;
+  // Build filter object
+  const filter = {};
+
+  // Company filter
+  if (company && mongoose.Types.ObjectId.isValid(company)) {
+    filter.company = company;
+  }
+
+  // Carrier type filter
+  if (carrierType) {
+    filter.carrierType = carrierType;
+  }
+
+  // Brand filter
+  if (brand) {
+    filter.brand = { $regex: brand, $options: "i" };
+  }
+
+  // Load capacity range filter
+  if (minLoadCapacity || maxLoadCapacity) {
+    filter.loadCapacity = {};
+    if (minLoadCapacity) filter.loadCapacity.$gte = Number(minLoadCapacity);
+    if (maxLoadCapacity) filter.loadCapacity.$lte = Number(maxLoadCapacity);
+  }
+
+  // Features filter (carrier must have all specified features)
+  if (features) {
+    const featureArray = Array.isArray(features) ? features : features.split(",");
+    filter.features = { $all: featureArray };
+  }
+
+  // Operating corridor filters
+  if (startLocation) {
+    filter["operatingCorrider.startLocation"] = { $regex: startLocation, $options: "i" };
+  }
+  if (destinationLocation) {
+    filter["operatingCorrider.destinationLocation"] = { $regex: destinationLocation, $options: "i" };
+  }
+
+  // Region/City filter (searches in both start and destination)
+  if (region || city) {
+    const locationSearch = region || city;
+    filter.$or = [
+      { "operatingCorrider.startLocation": { $regex: locationSearch, $options: "i" } },
+      { "operatingCorrider.destinationLocation": { $regex: locationSearch, $options: "i" } },
+    ];
+  }
+
+  // Availability filter
+  if (isAvailable !== undefined) {
+    filter.isAvailable = isAvailable === "true";
+  }
+
+  // Verification filter
+  if (isVerified !== undefined) {
+    filter.isVerified = isVerified === "true";
+  }
+
+  // Search filter (searches in model, brand, and aboutTruck)
+  if (search) {
+    filter.$or = [
+      { model: { $regex: search, $options: "i" } },
+      { brand: { $regex: search, $options: "i" } },
+      { aboutTruck: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // Calculate pagination
+  const skip = (Number(page) - 1) * Number(limit);
+
+  // Execute query with population
+  const carriers = await Carrier.find(filter)
+    .populate("company", "legalEntityName email phone")
+    .populate("truckOwner", "firstName lastName phone ratingAverage ratingQuantity")
+    .sort(sort)
+    .skip(skip)
+    .limit(Number(limit));
+
+  // Get total count for pagination
+  const total = await Carrier.countDocuments(filter);
 
   res.status(200).json({
     statusCode: 200,
-    message: "Successfully retrived all carriers",
-    total: carrier.length,
+    message: "Successfully retrieved all carriers",
+    total,
+    page: Number(page),
+    totalPages: Math.ceil(total / Number(limit)),
     data: {
-      carriers: carrier,
+      carriers,
     },
   });
 });

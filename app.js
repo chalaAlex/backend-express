@@ -14,6 +14,11 @@ const cargoTypeRouter = require("./routes/cargoType");
 const requestRouter = require("./routes/requestRoutes");
 const companyRouter = require("./routes/companyRoute");
 const driverRouter = require("./routes/driverRoute");
+const regionRouter = require("./routes/regionRoutes");
+const cityRouter = require("./routes/cityRoutes");
+const brandRouter = require("./routes/brandRoutes");
+const featureRouter = require("./routes/featureRoutes");
+const carrierTypeRouter = require("./routes/carrierTypeRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -36,6 +41,11 @@ app.use("/api/v1/requests", requestRouter);
 app.use("/api/v1/cargoType", cargoTypeRouter);
 app.use("/api/v1/companies", companyRouter);
 app.use("/api/v1/driver", driverRouter);
+app.use("/api/v1/regions", regionRouter);
+app.use("/api/v1/cities", cityRouter);
+app.use("/api/v1/brands", brandRouter);
+app.use("/api/v1/features", featureRouter);
+app.use("/api/v1/carrier-types", carrierTypeRouter);
 
 app.use("/api", distanceRouter);
 
