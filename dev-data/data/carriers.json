@@ -1,72 +1,69 @@
 [
   {
-    "_id": "66f1a2b3c4d5e6f701000001",
     "truckOwner": "66f1a2b3c4d5e6f700000001",
-    "driver": ["66f1a2b3c4d5e6f700000201"],
-    "company": "66f1a2b3c4d5e6f700000100",
+    "driver": [
+      "66f1a2b3c4d5e6f700000201"
+    ],
+    "company": "66f1a2b3c4d5e6f700000101",
     "model": "FH16",
-    "plateNumber": "AA-45678",
+    "plateNumber": "AA-45121",
     "brand": "Volvo",
     "loadCapacity": 30000,
     "features": [
       "GPS Tracking",
-      "Refrigerated Container",
-      "Air Suspension"
+      "Air Suspension",
+      "Cargo Camera"
     ],
     "operatingCorrider": {
       "startLocation": "Addis Abeba",
       "destinationLocation": "Dire Dawa"
     },
     "image": [
-      "https://example.com/trucks/volvo_fh16_1.jpg",
-      "https://example.com/trucks/volvo_fh16_2.jpg"
+      "https://example.com/trucks/volvo1.jpg"
     ],
-    "aboutTruck": "Heavy-duty refrigerated Volvo truck suitable for long-distance cargo transport.",
+    "aboutTruck": "Heavy duty Volvo truck suitable for long distance freight transport.",
     "isVerified": true,
     "isAvailable": true,
-    "isFeatured": true,
-    "createdAt": "2026-03-01T10:00:00.000Z",
-    "updatedAt": "2026-03-01T10:00:00.000Z"
+    "isFeatured": true
   },
   {
-    "_id": "66f1a2b3c4d5e6f701000002",
     "truckOwner": "66f1a2b3c4d5e6f700000002",
-    "driver": ["66f1a2b3c4d5e6f700000202"],
-    "company": "66f1a2b3c4d5e6f700000101",
+    "driver": [
+      "66f1a2b3c4d5e6f700000202"
+    ],
+    "company": "66f1a2b3c4d5e6f700000102",
     "model": "Actros 2545",
-    "plateNumber": "OR-99821",
+    "plateNumber": "OR-77102",
     "brand": "Mercedes-Benz",
     "loadCapacity": 28000,
     "features": [
       "ABS Braking",
-      "GPS Tracking",
-      "Cargo Camera"
+      "GPS Tracking"
     ],
     "operatingCorrider": {
       "startLocation": "Adama",
       "destinationLocation": "Djibouti"
     },
     "image": [
-      "https://example.com/trucks/actros_1.jpg"
+      "https://example.com/trucks/actros1.jpg"
     ],
-    "aboutTruck": "Reliable Mercedes Actros truck frequently used for import and export cargo transport.",
+    "aboutTruck": "Reliable Mercedes truck used for import export cargo transport.",
     "isVerified": true,
     "isAvailable": true,
-    "isFeatured": true,
-    "createdAt": "2026-03-02T11:00:00.000Z",
-    "updatedAt": "2026-03-02T11:00:00.000Z"
+    "isFeatured": false
   },
   {
-    "_id": "66f1a2b3c4d5e6f701000003",
     "truckOwner": "66f1a2b3c4d5e6f700000003",
-    "driver": ["66f1a2b3c4d5e6f700000203"],
-    "company": "66f1a2b3c4d5e6f700000102",
+    "driver": [
+      "66f1a2b3c4d5e6f700000203"
+    ],
+    "company": "66f1a2b3c4d5e6f700000103",
     "model": "XF 480",
-    "plateNumber": "AM-34567",
+    "plateNumber": "AM-33322",
     "brand": "DAF",
     "loadCapacity": 26000,
     "features": [
-      "GPS Tracking",
+      "GPS",
       "Air Suspension"
     ],
     "operatingCorrider": {
@@ -74,26 +71,25 @@
       "destinationLocation": "Addis Abeba"
     },
     "image": [
-      "https://example.com/trucks/daf_xf.jpg"
+      "https://example.com/trucks/daf1.jpg"
     ],
-    "aboutTruck": "Efficient cargo truck for transporting agricultural goods and general freight.",
+    "aboutTruck": "Efficient cargo truck transporting agricultural products.",
     "isVerified": false,
     "isAvailable": true,
-    "isFeatured": false,
-    "createdAt": "2026-03-03T08:00:00.000Z",
-    "updatedAt": "2026-03-03T08:00:00.000Z"
+    "isFeatured": false
   },
   {
-    "_id": "66f1a2b3c4d5e6f701000004",
     "truckOwner": "66f1a2b3c4d5e6f700000004",
-    "driver": ["66f1a2b3c4d5e6f700000204"],
-    "company": "66f1a2b3c4d5e6f700000103",
+    "driver": [
+      "66f1a2b3c4d5e6f700000204"
+    ],
+    "company": "66f1a2b3c4d5e6f700000104",
     "model": "FMX 420",
-    "plateNumber": "TI-88234",
+    "plateNumber": "TI-55211",
     "brand": "Volvo",
     "loadCapacity": 32000,
     "features": [
-      "Heavy Duty Suspension",
+      "Heavy Suspension",
       "GPS Tracking"
     ],
     "operatingCorrider": {
@@ -103,39 +99,423 @@
     "image": [
       "https://example.com/trucks/volvo_fmx.jpg"
     ],
-    "aboutTruck": "Powerful Volvo FMX truck designed for heavy construction and industrial loads.",
+    "aboutTruck": "Strong construction truck ideal for heavy industrial loads.",
     "isVerified": true,
     "isAvailable": false,
-    "isFeatured": true,
-    "createdAt": "2026-03-04T09:30:00.000Z",
-    "updatedAt": "2026-03-04T09:30:00.000Z"
+    "isFeatured": true
   },
   {
-    "_id": "66f1a2b3c4d5e6f701000005",
     "truckOwner": "66f1a2b3c4d5e6f700000005",
-    "driver": ["66f1a2b3c4d5e6f700000205"],
-    "company": "66f1a2b3c4d5e6f700000104",
+    "driver": [
+      "66f1a2b3c4d5e6f700000205"
+    ],
+    "company": "66f1a2b3c4d5e6f700000105",
     "model": "TGS 26.440",
-    "plateNumber": "AA-77890",
+    "plateNumber": "AA-88211",
     "brand": "MAN",
     "loadCapacity": 25000,
     "features": [
-      "Fuel Efficient Engine",
       "GPS Tracking",
-      "Cargo Monitoring"
+      "Fuel Efficient Engine"
     ],
     "operatingCorrider": {
       "startLocation": "Hawassa",
       "destinationLocation": "Addis Abeba"
     },
     "image": [
-      "https://example.com/trucks/man_tgs.jpg"
+      "https://example.com/trucks/man1.jpg"
     ],
-    "aboutTruck": "Modern MAN cargo truck suitable for medium and long haul transportation.",
+    "aboutTruck": "Modern MAN truck suitable for medium distance cargo transport.",
     "isVerified": false,
     "isAvailable": true,
-    "isFeatured": true,
-    "createdAt": "2026-03-05T12:00:00.000Z",
-    "updatedAt": "2026-03-05T12:00:00.000Z"
+    "isFeatured": true
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000006",
+    "driver": [
+      "66f1a2b3c4d5e6f700000206"
+    ],
+    "company": "66f1a2b3c4d5e6f700000106",
+    "model": "Scania R500",
+    "plateNumber": "OR-44556",
+    "brand": "Scania",
+    "loadCapacity": 31000,
+    "features": [
+      "GPS Tracking",
+      "ABS Braking"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Addis Abeba",
+      "destinationLocation": "Hawassa"
+    },
+    "image": [
+      "https://example.com/trucks/scania1.jpg"
+    ],
+    "aboutTruck": "High performance Scania truck for long haul freight transport.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000007",
+    "driver": [
+      "66f1a2b3c4d5e6f700000207"
+    ],
+    "company": "66f1a2b3c4d5e6f700000107",
+    "model": "Isuzu Giga",
+    "plateNumber": "AM-66221",
+    "brand": "Isuzu",
+    "loadCapacity": 24000,
+    "features": [
+      "Fuel Efficient Engine",
+      "GPS Tracking"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Adama",
+      "destinationLocation": "Dire Dawa"
+    },
+    "image": [
+      "https://example.com/trucks/isuzu1.jpg"
+    ],
+    "aboutTruck": "Reliable Isuzu truck commonly used for regional cargo transport.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000008",
+    "driver": [
+      "66f1a2b3c4d5e6f700000208"
+    ],
+    "company": "66f1a2b3c4d5e6f700000108",
+    "model": "Volvo FM 460",
+    "plateNumber": "AA-99882",
+    "brand": "Volvo",
+    "loadCapacity": 29000,
+    "features": [
+      "GPS Tracking",
+      "Cargo Camera"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Bahir Dar",
+      "destinationLocation": "Addis Abeba"
+    },
+    "image": [
+      "https://example.com/trucks/volvo2.jpg"
+    ],
+    "aboutTruck": "Versatile truck handling general cargo and container shipments.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": true
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000009",
+    "driver": [
+      "66f1a2b3c4d5e6f700000209"
+    ],
+    "company": "66f1a2b3c4d5e6f700000109",
+    "model": "TGX 18.500",
+    "plateNumber": "TI-77411",
+    "brand": "MAN",
+    "loadCapacity": 30000,
+    "features": [
+      "GPS Tracking",
+      "Cargo Monitoring"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Mekelle",
+      "destinationLocation": "Addis Abeba"
+    },
+    "image": [
+      "https://example.com/trucks/man2.jpg"
+    ],
+    "aboutTruck": "Heavy duty truck designed for high volume logistics transport.",
+    "isVerified": false,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000010",
+    "driver": [
+      "66f1a2b3c4d5e6f700000210"
+    ],
+    "company": "66f1a2b3c4d5e6f700000110",
+    "model": "Actros 1845",
+    "plateNumber": "AA-77191",
+    "brand": "Mercedes-Benz",
+    "loadCapacity": 27000,
+    "features": [
+      "GPS Tracking",
+      "Air Suspension"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Addis Abeba",
+      "destinationLocation": "Djibouti"
+    },
+    "image": [
+      "https://example.com/trucks/actros2.jpg"
+    ],
+    "aboutTruck": "Export corridor truck transporting container freight to port.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": true
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000011",
+    "driver": [
+      "66f1a2b3c4d5e6f700000211"
+    ],
+    "company": "66f1a2b3c4d5e6f700000111",
+    "model": "XF 530",
+    "plateNumber": "OR-11911",
+    "brand": "DAF",
+    "loadCapacity": 26000,
+    "features": [
+      "GPS Tracking",
+      "Cargo Camera"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Adama",
+      "destinationLocation": "Addis Abeba"
+    },
+    "image": [
+      "https://example.com/trucks/daf2.jpg"
+    ],
+    "aboutTruck": "Container cargo truck operating in central Ethiopia corridor.",
+    "isVerified": true,
+    "isAvailable": false,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000012",
+    "driver": [
+      "66f1a2b3c4d5e6f700000212"
+    ],
+    "company": "66f1a2b3c4d5e6f700000112",
+    "model": "FH 500",
+    "plateNumber": "AA-33441",
+    "brand": "Volvo",
+    "loadCapacity": 32000,
+    "features": [
+      "GPS Tracking",
+      "Refrigerated Container"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Hawassa",
+      "destinationLocation": "Dire Dawa"
+    },
+    "image": [
+      "https://example.com/trucks/volvo3.jpg"
+    ],
+    "aboutTruck": "Refrigerated truck transporting food and beverages.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": true
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000013",
+    "driver": [
+      "66f1a2b3c4d5e6f700000213"
+    ],
+    "company": "66f1a2b3c4d5e6f700000113",
+    "model": "Scania G450",
+    "plateNumber": "AM-55100",
+    "brand": "Scania",
+    "loadCapacity": 30000,
+    "features": [
+      "ABS Braking",
+      "GPS Tracking"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Gondar",
+      "destinationLocation": "Addis Abeba"
+    },
+    "image": [
+      "https://example.com/trucks/scania2.jpg"
+    ],
+    "aboutTruck": "Durable cargo truck moving agricultural freight to the capital.",
+    "isVerified": false,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000014",
+    "driver": [
+      "66f1a2b3c4d5e6f700000214"
+    ],
+    "company": "66f1a2b3c4d5e6f700000114",
+    "model": "Isuzu FVR",
+    "plateNumber": "AA-22001",
+    "brand": "Isuzu",
+    "loadCapacity": 18000,
+    "features": [
+      "Fuel Efficient Engine"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Jimma",
+      "destinationLocation": "Addis Abeba"
+    },
+    "image": [
+      "https://example.com/trucks/isuzu2.jpg"
+    ],
+    "aboutTruck": "Medium cargo truck delivering regional goods to central markets.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000015",
+    "driver": [
+      "66f1a2b3c4d5e6f700000215"
+    ],
+    "company": "66f1a2b3c4d5e6f700000115",
+    "model": "TGS 33.480",
+    "plateNumber": "OR-44123",
+    "brand": "MAN",
+    "loadCapacity": 31000,
+    "features": [
+      "GPS Tracking",
+      "Air Suspension"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Dire Dawa",
+      "destinationLocation": "Addis Abeba"
+    },
+    "image": [
+      "https://example.com/trucks/man3.jpg"
+    ],
+    "aboutTruck": "Large freight truck operating on eastern logistics corridor.",
+    "isVerified": true,
+    "isAvailable": false,
+    "isFeatured": true
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000016",
+    "driver": [
+      "66f1a2b3c4d5e6f700000216"
+    ],
+    "company": "66f1a2b3c4d5e6f700000116",
+    "model": "FH 460",
+    "plateNumber": "AA-66190",
+    "brand": "Volvo",
+    "loadCapacity": 29500,
+    "features": [
+      "GPS Tracking",
+      "ABS Braking"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Addis Abeba",
+      "destinationLocation": "Bahir Dar"
+    },
+    "image": [
+      "https://example.com/trucks/volvo4.jpg"
+    ],
+    "aboutTruck": "Long distance truck transporting bulk goods across regions.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000017",
+    "driver": [
+      "66f1a2b3c4d5e6f700000217"
+    ],
+    "company": "66f1a2b3c4d5e6f700000117",
+    "model": "Actros 2645",
+    "plateNumber": "TI-33912",
+    "brand": "Mercedes-Benz",
+    "loadCapacity": 30500,
+    "features": [
+      "GPS Tracking",
+      "Cargo Camera"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Mekelle",
+      "destinationLocation": "Adama"
+    },
+    "image": [
+      "https://example.com/trucks/actros3.jpg"
+    ],
+    "aboutTruck": "Reliable logistics truck serving northern industrial routes.",
+    "isVerified": false,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000018",
+    "driver": [
+      "66f1a2b3c4d5e6f700000218"
+    ],
+    "company": "66f1a2b3c4d5e6f700000118",
+    "model": "R450",
+    "plateNumber": "AM-99120",
+    "brand": "Scania",
+    "loadCapacity": 29800,
+    "features": [
+      "GPS Tracking",
+      "Air Suspension"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Addis Abeba",
+      "destinationLocation": "Jimma"
+    },
+    "image": [
+      "https://example.com/trucks/scania3.jpg"
+    ],
+    "aboutTruck": "High capacity truck delivering goods to western Ethiopia.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": true
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000019",
+    "driver": [
+      "66f1a2b3c4d5e6f700000219"
+    ],
+    "company": "66f1a2b3c4d5e6f700000119",
+    "model": "XF 450",
+    "plateNumber": "OR-77890",
+    "brand": "DAF",
+    "loadCapacity": 27000,
+    "features": [
+      "gps tracking"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Adama",
+      "destinationLocation": "Hawassa"
+    },
+    "image": [
+      "https://example.com/trucks/daf3.jpg"
+    ],
+    "aboutTruck": "General cargo truck connecting southern trade routes.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": false
+  },
+  {
+    "truckOwner": "66f1a2b3c4d5e6f700000020",
+    "driver": [
+      "66f1a2b3c4d5e6f700000220"
+    ],
+    "company": "66f1a2b3c4d5e6f700000120",
+    "model": "FM 420",
+    "plateNumber": "AA-55229",
+    "brand": "Volvo",
+    "loadCapacity": 28000,
+    "features": [
+      "GPS Tracking",
+      "Fuel Efficient Engine"
+    ],
+    "operatingCorrider": {
+      "startLocation": "Addis Abeba",
+      "destinationLocation": "Kombolcha"
+    },
+    "image": [
+      "https://example.com/trucks/volvo5.jpg"
+    ],
+    "aboutTruck": "Efficient Volvo truck widely used for domestic freight delivery.",
+    "isVerified": true,
+    "isAvailable": true,
+    "isFeatured": true
   }
 ]

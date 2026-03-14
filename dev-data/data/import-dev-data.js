@@ -26,20 +26,19 @@ mongoose
     process.exit(1);
   });
 
-const companies = JSON.parse(
-  fs.readFileSync(`${__dirname}/company.json`, "utf-8"),
+const carriers = JSON.parse(
+  fs.readFileSync(`${__dirname}/carriers.json`, "utf-8"),
 );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    console.log(`Importing ${companies.length} companies...`);
-    const result = await Company.create(companies);
+    console.log(`Importing ${carriers.length} companies...`);
+    const result = await Carrier.create(carriers);
     console.log(`Data successfully loaded! Created ${result.length} companies.`);
-    console.log("Collection name:", Company.collection.name);
     
     // Verify the data was inserted
-    const count = await Company.countDocuments();
+    const count = await Carrier.countDocuments();
     console.log(`Total companies in database: ${count}`);
   } catch (err) {
     console.log("Import error:", err);
@@ -50,7 +49,7 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    const result = await Company.deleteMany();
+    const result = await Carrier.deleteMany();
     console.log(`Data successfully deleted! Removed ${result.deletedCount} companies.`);
   } catch (err) {
     console.log("Delete error:", err);

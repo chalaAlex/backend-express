@@ -4,7 +4,7 @@ const { Types } = mongoose;
 const OperatingCorriderSchema = new mongoose.Schema({
   startLocation: {
     type: String,
-    default: "Addis Abeba",
+    required: true,
   },
 
   destinationLocation: {
@@ -92,10 +92,12 @@ const truckSchema = new mongoose.Schema(
       default: true,
       index: true, // Frequently queried field
     },
+    
     isFeatured: {
       type: Boolean,
     },
   },
+
   {
     timestamps: true,
     versionKey: false,
