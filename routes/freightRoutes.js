@@ -9,6 +9,10 @@ const router = express.Router();
 router.use("/:freightId/bids", bidRouter);
 
 router
+  .route("/my-freights")
+  .get(authController.protect, freightController.getMyFreights);
+
+router
   .route("/")
   .get(authController.protect, freightController.getAllFreights)
   .post(authController.protect, authController.restrictTo("user"), freightController.createFreight);

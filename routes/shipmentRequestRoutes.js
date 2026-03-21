@@ -1,17 +1,17 @@
 const express = require("express");
-const requestController = require("../controller/requestController");
+const requestController = require("../controller/shipmentRequestController");
 const authController = require("../controller/authController");
 const router = express.Router();
 
-// Create requests (freight owners only)
+// Create shipment request (freight owners only)
 router.post(
   "/",
   authController.protect,
-  authController.restrictTo("freight owner"),
+  authController.restrictTo("user"),
   requestController.createRequests,
 );
 
-// Get sent requests (freight owners)
+// Get sent shipment requests (freight owners)
 router.get(
   "/sent",
   authController.protect,
@@ -19,7 +19,7 @@ router.get(
   requestController.getSentRequests,
 );
 
-// Get received requests (carrier owners)
+// Get received shipment requests (carrier owners)
 router.get(
   "/received",
   authController.protect,
@@ -27,7 +27,7 @@ router.get(
   requestController.getReceivedRequests,
 );
 
-// Cancel request (freight owner who created it)
+// Cancel shipment request (freight owner who created it)
 router.delete(
   "/:id",
   authController.protect,
@@ -35,7 +35,7 @@ router.delete(
   requestController.cancelRequest,
 );
 
-// Accept request (carrier owner who received it)
+// Accept shipment request (carrier owner who received it)
 router.post(
   "/:id/accept",
   authController.protect,
@@ -43,7 +43,7 @@ router.post(
   requestController.acceptRequest,
 );
 
-// Reject request (carrier owner who received it)
+// Reject shipment request (carrier owner who received it)
 router.post(
   "/:id/reject",
   authController.protect,

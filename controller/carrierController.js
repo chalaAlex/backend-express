@@ -57,6 +57,7 @@ exports.getCarrier = catchAsync(async (req, res) => {
     "truckOwner",
     "firstName lastName phone ratingQuantity ratingAverage",
   );
+
   res.status(200).json({
     statusCode: 200,
     message: "Carrier successfully retrieved",
@@ -171,6 +172,7 @@ exports.deleteCarrier = catchAsync(async (req, res, next) => {
 
 // --------------- make favourite carrier ----------------//
 exports.makeFavourite = catchAsync(async (req, res, next) => {
+  console.log("fghjkllkjhgfdfghjkl;")
   if (!req.body.id) req.body.id = req.params.id;
 
   const carrierFavourite = await Carrier.findByIdAndUpdate(
@@ -178,6 +180,8 @@ exports.makeFavourite = catchAsync(async (req, res, next) => {
     { isFavourite: true },
     { new: true, runValidators: true },
   );
+
+  console.log(carrierFavourite);
 
   if (!carrierFavourite) {
     return next(new AppError("No carrier is found with that id", 404));

@@ -79,7 +79,7 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
 
-  if (this.role == "freight owner" || this.role == "admin") {
+  if (this.role == "freight_owner" || this.role == "admin") {
     this.ratingAverage = undefined;
     this.ratingQuantity = undefined;
   }

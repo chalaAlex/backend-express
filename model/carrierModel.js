@@ -92,12 +92,14 @@ const truckSchema = new mongoose.Schema(
       default: true,
       index: true, // Frequently queried field
     },
-    
+
     isFeatured: {
       type: Boolean,
     },
+    isFavourite: {
+      type: Boolean,
+    },
   },
-
   {
     timestamps: true,
     versionKey: false,

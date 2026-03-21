@@ -3,6 +3,16 @@ const carrierController = require("../controller/carrierController");
 const authController = require("../controller/authController");
 const router = express.Router({ mergeParams: true });
 
+router.get("/my-carriers", authController.protect, carrierController.getMyCarriers);
+
+router
+  .route("/:id/makeFavourite")
+  .patch(authController.protect, carrierController.makeFavourite);
+
+router
+  .route("/:id/disableFavourite")
+  .patch(authController.protect, carrierController.disableFavourite);
+
 router
   .route("/")
   .get(authController.protect, carrierController.getAllCarriers)
@@ -15,8 +25,6 @@ router
 router
   .route("/getFeaturedCarier")
   .get(authController.protect, carrierController.getFeatured);
-
-router.get("/my-trucks", authController.protect, carrierController.getMyCarriers);
 
 router
   .route("/:companyId/assign-carrier/:carrierId")

@@ -1,4 +1,4 @@
-const Request = require("../model/requestModel");
+const ShipmentRequest = require("../model/shipmentRequestModel");
 const Freight = require("../model/freightModel");
 const Carrier = require("../model/carrierModel");
 const User = require("../model/userModel");
@@ -6,155 +6,116 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 
-// --------------------------- CREATE REQUESTS -----------------------//
+// --------------------------- CREATE REQUEST -----------------------//
 exports.createRequests = catchAsync(async (req, res, next) => {
-  const { freightId, carrierIds, proposedPrice } = req.body;
+  const { carrierId, freightIds, proposedPrice } = req.body;
   const freightOwnerId = req.user.id;
 
   // Validate input
-  if (!freightId) {
-    return next(new AppError("Freight ID is required", 400));
+  if (!carrierId) {
+    return next(new AppError("Carrier ID is required", 400));
   }
 
-  if (!carrierIds || !Array.isArray(carrierIds) || carrierIds.length === 0) {
-    return next(new AppError("At least one carrier ID is required", 400));
+  if (!freightIds || !Array.isArray(freightIds) || freightIds.length === 0) {
+    return next(new AppError("At least one freight ID is required", 400));
   }
 
-  // Fetch freight
-  const freight = await Freight.findById(freightId);
-
-  if (!freight) {
-    return next(new AppError("Freight not found", 404));
+  // Fetch carrier
+  const truck = await Carrier.findById(carrierId);
+  if (!truck) {
+    return next(new AppError("Carrier not found", 404));
   }
 
-  // Verify freight ownership
-  if (freight.freightOwnerId.toString() !== freightOwnerId) {
-    return next(
-      new AppError("You are not authorized to send requests for this freight", 403),
-    );
-  }
+  const carrierOwnerId = truck.truckOwner;
 
-  // Verify freight status
-  if (!["OPEN", "BIDDING"].includes(freight.status)) {
+  // Check for existing request for this carrier + freight owner pair
+  const existingRequest = await ShipmentRequest.findOne({ carrierId, freightOwnerId });
+  if (existingRequest) {
     return next(
       new AppError(
-        "Cannot send requests for freights with status BOOKED, COMPLETED, or CANCELLED",
-        400,
+        "A request already exists between you and this carrier",
+        409,
       ),
     );
   }
 
-  // Get freight owner details for contact info
-  const freightOwner = await User.findById(freightOwnerId);
+  // Fetch all freights
+  const freights = await Freight.find({ _id: { $in: freightIds } });
 
-  const createdRequests = [];
-  const duplicates = [];
-  const errors = [];
+  if (freights.length === 0) {
+    return next(new AppError("No valid freights found", 404));
+  }
 
-  // Process each carrier
-  for (const carrierId of carrierIds) {
-    try {
-      // Fetch truck (carrier)
-      const truck = await Carrier.findById(carrierId);
-
-      if (!truck) {
-        errors.push({
-          carrierId,
-          message: "Carrier not found",
-        });
-        continue;
-      }
-
-      // Get carrier owner ID
-      const carrierOwnerId = truck.truckOwner;
-
-      // Check for existing request
-      const existingRequest = await Request.findOne({
-        freightId,
-        carrierId,
-      });
-
-      if (existingRequest) {
-        duplicates.push({
-          carrierId,
-          message: "Request already exists for this freight-carrier combination",
-          existingRequestId: existingRequest._id,
-        });
-        continue;
-      }
-
-      // Create freight snapshot
-      const freightSnapshot = {
-        cargoType: freight.cargo.type,
-        weight: freight.cargo.weightKg,
-        quantity: freight.cargo.quantity || 1,
-        pickupLocation: {
-          region: freight.route.pickup.region,
-          city: freight.route.pickup.city,
-          address: freight.route.pickup.address,
-        },
-        deliveryLocation: {
-          region: freight.route.dropoff.region,
-          city: freight.route.dropoff.city,
-          address: freight.route.dropoff.address,
-        },
-        pickupDate: freight.schedule.pickupDate,
-        deliveryDate: freight.schedule.deliveryDeadline,
-        specialRequirements: freight.cargo.description,
-        distance: freight.route.distanceKm,
-      };
-
-      // Create freight owner contact info
-      const freightOwnerContact = {
-        name: `${freightOwner.firstName} ${freightOwner.lastName || ""}`.trim(),
-        companyName: freightOwner.companyName || "",
-        email: freightOwner.email,
-        phone: freightOwner.phone,
-      };
-
-      // Create request
-      const newRequest = await Request.create({
-        freightOwnerId,
-        carrierOwnerId,
-        carrierId,
-        freightId,
-        status: "PENDING",
-        freightSnapshot,
-        proposedPrice: proposedPrice || undefined,
-        freightOwnerContact,
-      });
-
-      createdRequests.push(newRequest._id);
-    } catch (error) {
-      // Handle duplicate key error from MongoDB
-      if (error.code === 11000) {
-        duplicates.push({
-          carrierId,
-          message: "Request already exists for this freight-carrier combination",
-        });
-      } else {
-        errors.push({
-          carrierId,
-          message: error.message,
-        });
-      }
+  // Verify ownership and status for each freight
+  for (const freight of freights) {
+    if (freight.freightOwnerId.toString() !== freightOwnerId) {
+      return next(
+        new AppError(
+          `You are not authorized to send requests for freight ${freight._id}`,
+          403,
+        ),
+      );
+    }
+    if (!["OPEN", "BIDDING"].includes(freight.status)) {
+      return next(
+        new AppError(
+          `Freight ${freight._id} has status ${freight.status} and cannot be requested`,
+          400,
+        ),
+      );
     }
   }
 
+  // Build snapshots array — one per freight
+  const freightSnapshots = freights.map((freight) => ({
+    freightId: freight._id,
+    cargoType: freight.cargo.type,
+    weight: freight.cargo.weightKg,
+    quantity: freight.cargo.quantity || 1,
+    pickupLocation: {
+      region: freight.route.pickup.region,
+      city: freight.route.pickup.city,
+      address: freight.route.pickup.address,
+    },
+    deliveryLocation: {
+      region: freight.route.dropoff.region,
+      city: freight.route.dropoff.city,
+      address: freight.route.dropoff.address,
+    },
+    pickupDate: freight.schedule.pickupDate,
+    deliveryDate: freight.schedule.deliveryDeadline,
+    specialRequirements: freight.cargo.description,
+  }));
+
+  // Get freight owner contact info
+  const freightOwner = await User.findById(freightOwnerId);
+  const freightOwnerContact = {
+    name: `${freightOwner.firstName} ${freightOwner.lastName || ""}`.trim(),
+    companyName: freightOwner.companyName || "",
+    email: freightOwner.email,
+    phone: freightOwner.phone,
+  };
+
+  // Create single request document
+  const newRequest = await ShipmentRequest.create({
+    freightOwnerId,
+    carrierOwnerId,
+    carrierId,
+    freightIds: freights.map((f) => f._id),
+    status: "PENDING",
+    freightSnapshots,
+    proposedPrice: proposedPrice || undefined,
+    freightOwnerContact,
+  });
+
   res.status(201).json({
     statusCode: 201,
-    message: "Requests processed successfully",
+    message: "Request created successfully",
     data: {
-      createdRequests,
-      createdCount: createdRequests.length,
-      duplicates,
-      duplicateCount: duplicates.length,
-      errors,
-      errorCount: errors.length,
+      request: newRequest,
     },
   });
 });
-
 
 // --------------------------- CANCEL REQUEST -----------------------//
 exports.cancelRequest = catchAsync(async (req, res, next) => {
@@ -162,7 +123,7 @@ exports.cancelRequest = catchAsync(async (req, res, next) => {
   const freightOwnerId = req.user.id;
 
   // Fetch request
-  const request = await Request.findById(requestId);
+  const request = await ShipmentRequest.findById(requestId);
 
   if (!request) {
     return next(new AppError("Request not found", 404));
@@ -198,14 +159,13 @@ exports.cancelRequest = catchAsync(async (req, res, next) => {
   });
 });
 
-
 // --------------------------- ACCEPT REQUEST -----------------------//
 exports.acceptRequest = catchAsync(async (req, res, next) => {
   const requestId = req.params.id;
   const carrierOwnerId = req.user.id;
 
   // Fetch request and populate carrier
-  const request = await Request.findById(requestId).populate("carrierId");
+  const request = await ShipmentRequest.findById(requestId).populate("carrierId");
 
   if (!request) {
     return next(new AppError("Request not found", 404));
@@ -229,7 +189,7 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
   }
 
   // Fetch freight and verify it's not already booked
-  const freight = await Freight.findById(request.freightId);
+  const freight = await Freight.findById(request.freightIds);
 
   if (!freight) {
     return next(new AppError("Freight not found", 404));
@@ -255,9 +215,9 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
     await freight.save({ session });
 
     // Find and update all other pending requests to REJECTED
-    const autoRejectedResult = await Request.updateMany(
+    const autoRejectedResult = await ShipmentRequest.updateMany(
       {
-        freightId: request.freightId,
+        freightIds: request.freightIds,
         status: "PENDING",
         _id: { $ne: requestId },
       },
@@ -284,14 +244,13 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
   }
 });
 
-
 // --------------------------- REJECT REQUEST -----------------------//
 exports.rejectRequest = catchAsync(async (req, res, next) => {
   const requestId = req.params.id;
   const carrierOwnerId = req.user.id;
 
   // Fetch request and populate carrier
-  const request = await Request.findById(requestId).populate("carrierId");
+  const request = await ShipmentRequest.findById(requestId).populate("carrierId");
 
   if (!request) {
     return next(new AppError("Request not found", 404));
@@ -327,7 +286,6 @@ exports.rejectRequest = catchAsync(async (req, res, next) => {
   });
 });
 
-
 // --------------------------- GET SENT REQUESTS -----------------------//
 exports.getSentRequests = catchAsync(async (req, res, next) => {
   const freightOwnerId = req.user.id;
@@ -340,15 +298,15 @@ exports.getSentRequests = catchAsync(async (req, res, next) => {
     filter.status = req.query.status.toUpperCase();
   }
 
-  // Add optional freightId filter
-  if (req.query.freightId) {
-    filter.freightId = req.query.freightId;
+  // Add optional freightIds filter
+  if (req.query.freightIds) {
+    filter.freightIds = req.query.freightIds;
   }
 
   // Query requests
-  const requests = await Request.find(filter)
+  const requests = await ShipmentRequest.find(filter)
     .populate("carrierId", "model brand plateNumber")
-    .populate("freightId", "cargo route schedule status")
+    .populate("freightIds", "cargo route schedule status")
     .sort({ createdAt: -1 });
 
   res.status(200).json({
@@ -361,13 +319,12 @@ exports.getSentRequests = catchAsync(async (req, res, next) => {
   });
 });
 
-
 // --------------------------- GET RECEIVED REQUESTS -----------------------//
 exports.getReceivedRequests = catchAsync(async (req, res, next) => {
   const carrierOwnerId = req.user.id;
 
   // Find all trucks owned by the user
-  const trucks = await Truck.find({ truckOwner: carrierOwnerId });
+  const trucks = await Carrier.find({ truckOwner: carrierOwnerId });
   const truckIds = trucks.map((truck) => truck._id);
 
   if (truckIds.length === 0) {
@@ -390,8 +347,8 @@ exports.getReceivedRequests = catchAsync(async (req, res, next) => {
   }
 
   // Query requests
-  const requests = await Request.find(filter)
-    .populate("freightId", "cargo route schedule status")
+  const requests = await ShipmentRequest.find(filter)
+    .populate("freightIds", "cargo route schedule status")
     .populate("freightOwnerId", "firstName lastName email phone")
     .populate("carrierId", "model brand plateNumber")
     .sort({ createdAt: -1 });
