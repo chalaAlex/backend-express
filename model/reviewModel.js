@@ -9,9 +9,21 @@ const ReviewSchema = new Schema(
       required: true,
     },
 
-    carrierId: {
+    shipmentRequestId: {
       type: Types.ObjectId,
-      ref: "User",
+      ref: "ShipmentRequest",
+      required: true,
+    },
+
+    // Polymorphic target — either a carrier_owner (User) or a company (Company)
+    targetId: {
+      type: Types.ObjectId,
+      required: true,
+    },
+
+    targetType: {
+      type: String,
+      enum: ["carrier_owner", "company"],
       required: true,
     },
 
@@ -32,41 +44,54 @@ const ReviewSchema = new Schema(
       maxlength: 100,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-// one review per freight owner per carrier
-ReviewSchema.index({ reviewerId: 1, carrierId: 1 }, { unique: true });
+// One review per freight owner per shipment request
+ReviewSchema.index({ reviewerId: 1, shipmentRequestId: 1 }, { unique: true });
 
 /* =========================
    🔥 CALCULATE AVERAGE
 ========================= */
 
-ReviewSchema.statics.calcAverageRatings = async function (carrierId) {
+ReviewSchema.statics.calcAverageRatings = async function (targetId, targetType) {
   const stats = await this.aggregate([
-    { $match: { carrierId: carrierId } },
+    { $match: { targetId: targetId, targetType: targetType } },
     {
       $group: {
-        _id: "$carrierId",
+        _id: "$targetId",
         ratingQuantity: { $sum: 1 },
         ratingAverage: { $avg: "$rating" },
       },
     },
   ]);
 
-  const User = mongoose.model("User");
-
-  if (stats.length > 0) {
-    await User.findByIdAndUpdate(carrierId, {
-      ratingQuantity: stats[0].ratingQuantity,
-      ratingAverage: stats[0].ratingAverage,
-    });
-  } else {
-    // no reviews left
-    await User.findByIdAndUpdate(carrierId, {
-      ratingQuantity: 0,
-      ratingAverage: 4.5,
-    });
+  if (targetType === "carrier_owner") {
+    const User = mongoose.model("User");
+    if (stats.length > 0) {
+      await User.findByIdAndUpdate(targetId, {
+        ratingQuantity: stats[0].ratingQuantity,
+        ratingAverage: stats[0].ratingAverage,
+      });
+    } else {
+      await User.findByIdAndUpdate(targetId, {
+        ratingQuantity: 0,
+        ratingAverage: 4.5,
+      });
+    }
+  } else if (targetType === "company") {
+    const Company = mongoose.model("Company");
+    if (stats.length > 0) {
+      await Company.findByIdAndUpdate(targetId, {
+        ratingQuantity: stats[0].ratingQuantity,
+        ratingAverage: stats[0].ratingAverage,
+      });
+    } else {
+      await Company.findByIdAndUpdate(targetId, {
+        ratingQuantity: 0,
+        ratingAverage: 4.5,
+      });
+    }
   }
 };
 
@@ -75,7 +100,7 @@ ReviewSchema.statics.calcAverageRatings = async function (carrierId) {
 ========================= */
 
 ReviewSchema.post("save", function () {
-  this.constructor.calcAverageRatings(this.carrierId);
+  this.constructor.calcAverageRatings(this.targetId, this.targetType);
 });
 
 /* =========================
@@ -89,7 +114,7 @@ ReviewSchema.pre(/^findOneAnd/, async function (next) {
 
 ReviewSchema.post(/^findOneAnd/, async function () {
   if (this.r) {
-    await this.r.constructor.calcAverageRatings(this.r.carrierId);
+    await this.r.constructor.calcAverageRatings(this.r.targetId, this.r.targetType);
   }
 });
 

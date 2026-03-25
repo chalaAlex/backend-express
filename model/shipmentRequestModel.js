@@ -58,8 +58,13 @@ const requestSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["PENDING", "ACCEPTED", "REJECTED", "CANCELLED"],
-      default: "PENDING",
+      enum: ["PENDING", "ACCEPTED", "REJECTED", "CANCELLED", "COMPLETED"],
+      default: "COMPLETED",
+    },
+
+    isReviewed: {
+      type: Boolean,
+      default: false,
     },
 
     // One snapshot per freight

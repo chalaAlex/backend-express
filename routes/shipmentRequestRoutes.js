@@ -15,7 +15,7 @@ router.post(
 router.get(
   "/sent",
   authController.protect,
-  authController.restrictTo("freight owner"),
+  authController.restrictTo("user"),
   requestController.getSentRequests,
 );
 
@@ -31,7 +31,7 @@ router.get(
 router.delete(
   "/:id",
   authController.protect,
-  authController.restrictTo("freight owner"),
+  authController.restrictTo("user"),
   requestController.cancelRequest,
 );
 
@@ -49,6 +49,14 @@ router.post(
   authController.protect,
   authController.restrictTo("carrier_owner"),
   requestController.rejectRequest,
+);
+
+// Complete shipment request (freight owner who created it)
+router.patch(
+  "/:id/complete",
+  authController.protect,
+  authController.restrictTo("user"),
+  requestController.completeRequest,
 );
 
 module.exports = router;

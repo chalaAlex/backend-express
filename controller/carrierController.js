@@ -53,10 +53,9 @@ exports.createCarrier = catchAsync(async (req, res, next) => {
 
 // -------------------- GET carrier ----------------------//
 exports.getCarrier = catchAsync(async (req, res) => {
-  const carrier = await Carrier.findById(req.params.id).populate(
-    "truckOwner",
-    "firstName lastName phone ratingQuantity ratingAverage",
-  );
+  const carrier = await Carrier.findById(req.params.id)
+    .populate("truckOwner", "firstName lastName phone ratingQuantity ratingAverage")
+    .populate("company", "legalEntityName ratingAverage ratingQuantity");
 
   res.status(200).json({
     statusCode: 200,
@@ -310,7 +309,7 @@ exports.assignCarrierToCompany = catchAsync(async (req, res, next) => {
     ),
     Carrier.findByIdAndUpdate(
       carrierId,
-      { company: companyId },
+      { company: companyId, isItCompaniesCarrier: true },
       { new: true, runValidators: true },
     ),
   ];

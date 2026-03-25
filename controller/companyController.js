@@ -155,15 +155,12 @@ exports.getRecommendedCompanies = catchAsync(async (req, res) => {
       $addFields: {
         score: {
           $add: [
-            { $multiply: ["$ratingAverage", 3] },
-
+            { $multiply: [{ $ifNull: ["$ratingAverage", 0] }, 3] },
             {
-              $log: [{ $add: ["$completedShipments", 1] }, 10],
+              $log: [{ $add: [{ $ifNull: ["$completedShipments", 0] }, 1] }, 10],
             },
-
-            { $multiply: ["$fleetSize", 0.5] },
-
-            { $cond: ["$verified", 5, 0] },
+            { $multiply: [{ $ifNull: ["$fleetSize", 0] }, 0.5] },
+            { $cond: ["$isVerified", 5, 0] },
           ],
         },
       },

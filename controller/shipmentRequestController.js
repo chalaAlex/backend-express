@@ -96,6 +96,11 @@ exports.createRequests = catchAsync(async (req, res, next) => {
     phone: freightOwner.phone,
   };
 
+  await Freight.updateMany(
+    { _id: { $in: freightIds }, status: "OPEN" },
+    { $set: { status: "BIDDING" } },
+  );
+
   // Create single request document
   const newRequest = await ShipmentRequest.create({
     freightOwnerId,
@@ -201,47 +206,33 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Start transaction
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  // Update request status to ACCEPTED
+  request.status = "ACCEPTED";
+  await request.save();
 
-  try {
-    // Update request status to ACCEPTED
-    request.status = "ACCEPTED";
-    await request.save({ session });
+  // Update freight status to BOOKED
+  freight.status = "BOOKED";
+  await freight.save();
 
-    // Update freight status to BOOKED
-    freight.status = "BOOKED";
-    await freight.save({ session });
+  // Auto-reject all other pending requests for the same freight
+  const autoRejectedResult = await ShipmentRequest.updateMany(
+    {
+      freightIds: request.freightIds,
+      status: "PENDING",
+      _id: { $ne: requestId },
+    },
+    { status: "REJECTED" },
+  );
 
-    // Find and update all other pending requests to REJECTED
-    const autoRejectedResult = await ShipmentRequest.updateMany(
-      {
-        freightIds: request.freightIds,
-        status: "PENDING",
-        _id: { $ne: requestId },
-      },
-      { status: "REJECTED" },
-      { session },
-    );
-
-    await session.commitTransaction();
-
-    res.status(200).json({
-      statusCode: 200,
-      message: "Request accepted successfully",
-      data: {
-        request,
-        freight,
-        autoRejectedCount: autoRejectedResult.modifiedCount,
-      },
-    });
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    session.endSession();
-  }
+  res.status(200).json({
+    statusCode: 200,
+    message: "Request accepted successfully",
+    data: {
+      request,
+      freight,
+      autoRejectedCount: autoRejectedResult.modifiedCount,
+    },
+  });
 });
 
 // --------------------------- REJECT REQUEST -----------------------//
@@ -303,6 +294,11 @@ exports.getSentRequests = catchAsync(async (req, res, next) => {
     filter.freightIds = req.query.freightIds;
   }
 
+  // Add optional isReviewed filter
+  if (req.query.isReviewed !== undefined) {
+    filter.isReviewed = req.query.isReviewed === "true";
+  }
+
   // Query requests
   const requests = await ShipmentRequest.find(filter)
     .populate("carrierId", "model brand plateNumber")
@@ -359,6 +355,43 @@ exports.getReceivedRequests = catchAsync(async (req, res, next) => {
     total: requests.length,
     data: {
       requests,
+    },
+  });
+});
+
+// --------------------------- COMPLETE REQUEST -----------------------//
+exports.completeRequest = catchAsync(async (req, res, next) => {
+  const requestId = req.params.id;
+  const freightOwnerId = req.user.id;
+
+  const request = await ShipmentRequest.findById(requestId);
+
+  if (!request) {
+    return next(new AppError("ShipmentRequest not found", 404));
+  }
+
+  // Only the freight owner who created the request can mark it complete
+  if (request.freightOwnerId.toString() !== freightOwnerId) {
+    return next(
+      new AppError("You are not authorized to complete this request", 403),
+    );
+  }
+
+  // Only ACCEPTED shipments can be completed
+  if (request.status !== "ACCEPTED") {
+    return next(
+      new AppError("Only ACCEPTED shipments can be completed", 400),
+    );
+  }
+
+  request.status = "COMPLETED";
+  await request.save();
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Shipment marked as completed successfully",
+    data: {
+      request,
     },
   });
 });
