@@ -99,8 +99,21 @@ ReviewSchema.statics.calcAverageRatings = async function (targetId, targetType) 
    ➕ AFTER CREATE
 ========================= */
 
-ReviewSchema.post("save", function () {
+ReviewSchema.post("save", async function () {
   this.constructor.calcAverageRatings(this.targetId, this.targetType);
+
+  // Push review reference into the target's review array
+  if (this.targetType === "company") {
+    const Company = mongoose.model("Company");
+    await Company.findByIdAndUpdate(this.targetId, {
+      $addToSet: { review: this._id },
+    });
+  } else if (this.targetType === "carrier_owner") {
+    const User = mongoose.model("User");
+    await User.findByIdAndUpdate(this.targetId, {
+      $addToSet: { review: this._id },
+    });
+  }
 });
 
 /* =========================

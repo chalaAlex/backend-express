@@ -96,14 +96,17 @@ const truckSchema = new mongoose.Schema(
     isFeatured: {
       type: Boolean,
     },
+
     isFavourite: {
       type: Boolean,
     },
+
     isItCompaniesCarrier: {
       type: Boolean,
       default: false,
     },
   },
+  
   {
     timestamps: true,
     versionKey: false,

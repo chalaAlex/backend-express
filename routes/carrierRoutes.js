@@ -30,7 +30,7 @@ router
   .route("/:companyId/assign-carrier/:carrierId")
   .patch(
     authController.protect,
-    authController.restrictTo("admin, carrier_owner"),
+    authController.restrictTo("carrier_owner"),
     carrierController.assignCarrierToCompany,
   );
 

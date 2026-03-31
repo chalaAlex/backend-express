@@ -34,7 +34,7 @@ exports.createReview = catchAsync(async (req, res, next) => {
   const reviewerId = req.user.id;
 
   // 1. Role check
-  if (req.user.role !== "freight_owner") {
+  if (req.user.role !== "user") {
     return next(new AppError("Only freight owners can submit reviews", 403));
   }
 

@@ -20,13 +20,16 @@ router
   .route("/:companyId/assign-carrier/:carrierId")
   .patch(
     authController.protect,
-    authController.restrictTo("admin"),
+    authController.restrictTo("admin", "carrier_owner"),
     carrierController.assignCarrierToCompany,
   );
 
 router.route("/")
   .get(authController.protect, companyController.getAllCompany)
   .post(authController.protect, companyController.registerCompany);
+
+router.route("/my-company")
+  .get(authController.protect, companyController.getMyCompany);
 
 router.route("/:id")
   .get(authController.protect, companyController.getCompany)

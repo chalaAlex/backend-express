@@ -9,7 +9,7 @@ route
   .get(authController.protect, reviewController.getReviewsForTarget)
   .post(
     authController.protect,
-    authController.restrictTo("freight_owner"),
+    authController.restrictTo("user"),
     reviewController.createReview,
   );
 

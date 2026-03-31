@@ -4,6 +4,28 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 const { Types } = require("mongoose");
 
+exports.getMyCompany = catchAsync(async (req, res, next) => {
+  const company = await Company.findOne({
+    primaryContactPerson: req.user.id,
+  })
+    .populate("primaryContactPerson", "firstName lastName phone email")
+    .populate({
+      path: "review",
+      populate: { path: "reviewerId", select: "firstName lastName" },
+      options: { sort: { createdAt: -1 } },
+    });
+
+  if (!company) {
+    return next(new AppError("No company found for this user", 404));
+  }
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Company retrieved successfully",
+    data: { company },
+  });
+});
+
 exports.getAllCompany = catchAsync(async (req, res) => {
   const features = new APIFeatures(Company.find(), req.query)
     .filter()
@@ -62,7 +84,12 @@ exports.getCompany = catchAsync(async (req, res, next) => {
   }
 
   const company = await Company.findById(id)
-    .populate("primaryContactPerson", "firstName lastName phone email");
+    .populate("primaryContactPerson", "firstName lastName phone email")
+    .populate({
+      path: "review",
+      populate: { path: "reviewerId", select: "firstName lastName" },
+      options: { sort: { createdAt: -1 } },
+    });
 
   if (!company) {
     return next(new AppError("Company not found", 404));
@@ -229,4 +256,3 @@ exports.getCompanyCarriers = catchAsync(async (req, res, next) => {
     },
   });
 });
-

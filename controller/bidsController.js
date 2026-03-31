@@ -3,7 +3,6 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 const { Types } = require("mongoose");
-
 const Freight = require("../model/freightModel");
 const Carrier = require("../model/carrierModel");
 const filterObj = require("../utils/filterObj");
@@ -58,7 +57,7 @@ exports.createBid = catchAsync(async (req, res, next) => {
   }
 
   // Check truck
-  const truck = await Truck.findById(carrierId);
+  const truck = await Carrier.findById(carrierId);
 
   if (!truck) {
     return next(
@@ -217,4 +216,4 @@ exports.deleteBid = catchAsync(async (req, res, next) => {
     message: "Successfully deleted bidding",
     data: null,
   });
-});
+}); 

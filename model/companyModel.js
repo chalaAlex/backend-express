@@ -119,6 +119,13 @@ const companyModel = new Schema(
     isFavourite: {
       type: Boolean,
     },
+
+    review: [
+      {
+        type: Types.ObjectId,
+        ref: "Review",
+      },
+    ],
   },
   { timestamps: true },
 );
