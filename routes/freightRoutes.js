@@ -15,7 +15,7 @@ router
 router
   .route("/")
   .get(authController.protect, freightController.getAllFreights)
-  .post(authController.protect, authController.restrictTo("user"), freightController.createFreight);
+  .post(authController.protect, authController.restrictTo("freight_owner"), freightController.createFreight);
 
 router
   .route("/:id")

@@ -4,7 +4,6 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
 const options = {
-  discriminatorKey: "role",
   collection: "users",
 };
 

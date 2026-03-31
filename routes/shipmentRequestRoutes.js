@@ -7,7 +7,7 @@ const router = express.Router();
 router.post(
   "/",
   authController.protect,
-  authController.restrictTo("user"),
+  authController.restrictTo("freight_owner"),
   requestController.createRequests,
 );
 
@@ -15,7 +15,7 @@ router.post(
 router.get(
   "/sent",
   authController.protect,
-  authController.restrictTo("user"),
+  authController.restrictTo("freight_owner"),
   requestController.getSentRequests,
 );
 
@@ -31,7 +31,7 @@ router.get(
 router.delete(
   "/:id",
   authController.protect,
-  authController.restrictTo("user"),
+  authController.restrictTo("freight_owner"),
   requestController.cancelRequest,
 );
 
@@ -55,7 +55,7 @@ router.post(
 router.patch(
   "/:id/complete",
   authController.protect,
-  authController.restrictTo("user"),
+  authController.restrictTo("freight_owner"),
   requestController.completeRequest,
 );
 

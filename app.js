@@ -19,6 +19,7 @@ const cityRouter = require("./routes/cityRoutes");
 const brandRouter = require("./routes/brandRoutes");
 const featureRouter = require("./routes/featureRoutes");
 const carrierTypeRouter = require("./routes/carrierTypeRoutes");
+const chatRouter = require("./routes/chatRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -47,6 +48,7 @@ app.use("/api/v1/brands", brandRouter);
 app.use("/api/v1/features", featureRouter);
 app.use("/api/v1/carrier-types", carrierTypeRouter);
 
+app.use("/api/v1/chat", chatRouter);
 app.use("/api", distanceRouter);
 
 module.exports = app;
