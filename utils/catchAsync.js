@@ -1,5 +1,8 @@
 module.exports = (fn) => {
-    return (req, res, next) => {
-        fn(req, res, next).catch((err) => next(err));
-    };
+  return (req, res, next) => {
+    fn(req, res, next).catch((err) => {
+      console.error('[catchAsync]', err.message, err.stack);
+      next(err);
+    });
+  };
 };

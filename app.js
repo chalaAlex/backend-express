@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const errorController = require("./controller/errorController");
 const app = express();
 
 // Routers
@@ -26,6 +27,7 @@ if (process.env.NODE_ENV === "development") {
 }
 // 1) MIDDLEWARES
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   next();
 });
@@ -50,5 +52,8 @@ app.use("/api/v1/carrier-types", carrierTypeRouter);
 
 app.use("/api/v1/chat", chatRouter);
 app.use("/api", distanceRouter);
+
+// Global error handler — must be last
+app.use(errorController);
 
 module.exports = app;
