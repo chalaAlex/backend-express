@@ -17,7 +17,7 @@ const bidsSchema = new Schema(
 
     carrierId: {
       type: Types.ObjectId,
-      ref: "Truck",
+      ref: "Carrier",
       required: true,
     },
 

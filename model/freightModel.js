@@ -123,7 +123,7 @@ const FreightSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["OPEN", "BIDDING", "BOOKED", "COMPLETED", "CANCELLED"],
+      enum: ["OPEN", "BIDDING", "BOOKED", "IN_TRANSIT", "COMPLETED", "CANCELLED"],
       default: "OPEN",
     },
     image: [

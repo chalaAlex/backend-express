@@ -1,4 +1,5 @@
 const Carrier = require("./../model/carrierModel");
+const { notify } = require('../utils/emailNotificationService');
 const Company = require("./../model/companyModel");
 const Region = require("./../model/regionModel");
 const City = require("./../model/cityModel");
@@ -34,6 +35,18 @@ exports.getAllCarriers = catchAsync(async (req, res) => {
 
 // ------------------- CREATE carrier --------------------//
 exports.createCarrier = catchAsync(async (req, res, next) => {
+  const { vehicleRegistration, tradeLicense, ownerDigitalId } =
+    req.body.documents ?? {};
+
+  if (!vehicleRegistration || !tradeLicense || !ownerDigitalId) {
+    return next(
+      new AppError(
+        'All three legal documents (vehicleRegistration, tradeLicense, ownerDigitalId) are required',
+        400,
+      ),
+    );
+  }
+
   if (!req.body.truckOwner)
     req.body.truckOwner = req.user.id || req.params.userId;
   console.log(req.params.userId);
@@ -41,6 +54,8 @@ exports.createCarrier = catchAsync(async (req, res, next) => {
     ...req.body,
     truckOwner: req.body.truckOwner,
   });
+
+  notify('carrier.created', { carrier: newCarrier }).catch(() => {});
 
   res.status(201).json({
     statusCode: 201,
@@ -95,6 +110,7 @@ exports.getMyCarriers = catchAsync(async (req, res) => {
     },
   });
 });
+
 // --------------------- UPDATE carrier ------------------//
 exports.updateCarrier = catchAsync(async (req, res, next) => {
   const allowedFields = [
@@ -171,7 +187,6 @@ exports.deleteCarrier = catchAsync(async (req, res, next) => {
 
 // --------------- make favourite carrier ----------------//
 exports.makeFavourite = catchAsync(async (req, res, next) => {
-  console.log("fghjkllkjhgfdfghjkl;")
   if (!req.body.id) req.body.id = req.params.id;
 
   const carrierFavourite = await Carrier.findByIdAndUpdate(
@@ -233,6 +248,8 @@ exports.verifyCarrier = catchAsync(async (req, res, next) => {
   if (!carrier) {
     return next(new AppError("No carrier is found with that id", 404));
   }
+
+  notify('carrier.verified', { carrier }).catch(() => {});
 
   res.status(200).json({
     statusCode: 200,

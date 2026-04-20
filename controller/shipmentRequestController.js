@@ -5,6 +5,7 @@ const User = require("../model/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
+const { createNotification } = require("./notificationController");
 
 // --------------------------- CREATE REQUEST -----------------------//
 exports.createRequests = catchAsync(async (req, res, next) => {
@@ -29,7 +30,7 @@ exports.createRequests = catchAsync(async (req, res, next) => {
   const carrierOwnerId = truck.truckOwner;
 
   // Check for existing request for this carrier + freight owner pair
-  const existingRequest = await ShipmentRequest.findOne({ carrierId, freightOwnerId });
+  const existingRequest = await ShipmentRequest.findOne({ carrierId, freightIds });
   if (existingRequest) {
     return next(
       new AppError(
@@ -112,6 +113,9 @@ exports.createRequests = catchAsync(async (req, res, next) => {
     proposedPrice: proposedPrice || undefined,
     freightOwnerContact,
   });
+
+  const io = req.app.get('io');
+  createNotification(carrierOwnerId, 'SHIPMENT_REQUEST_RECEIVED', newRequest._id, 'New Shipment Request', 'A freight owner sent you a shipment request.', io);
 
   res.status(201).json({
     statusCode: 201,

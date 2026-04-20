@@ -76,6 +76,12 @@ const truckSchema = new mongoose.Schema(
       },
     ],
 
+    documents: {
+      vehicleRegistration: { type: String, trim: true },
+      tradeLicense:        { type: String, trim: true },
+      ownerDigitalId:      { type: String, trim: true },
+    },
+
     aboutTruck: {
       type: String,
       required: true,

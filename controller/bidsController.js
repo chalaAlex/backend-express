@@ -6,6 +6,21 @@ const { Types } = require("mongoose");
 const Freight = require("../model/freightModel");
 const Carrier = require("../model/carrierModel");
 const filterObj = require("../utils/filterObj");
+const { createNotification } = require("../controller/notificationController");
+
+// --------------------------- GET MY BIDS (carrier owner) -----------------------//
+exports.getMyBids = catchAsync(async (req, res) => {
+  const bids = await Bids.find({ carrierOwnerId: req.user.id })
+    .populate('freightId', 'cargo route schedule pricing status image')
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    statusCode: 200,
+    message: 'Successfully retrieved your bids',
+    total: bids.length,
+    data: { bids },
+  });
+});
 
 // --------------------------- GET ALL BID -----------------------//
 exports.getAllBid = catchAsync(async (req, res) => {
@@ -105,6 +120,9 @@ exports.createBid = catchAsync(async (req, res, next) => {
     ...(freight.status === "OPEN" && { status: "BIDDING" }),
   });
 
+  const io = req.app.get('io');
+  createNotification(freightOwnerId, 'BID_RECEIVED', newBid._id, 'New Bid Received', 'A carrier owner placed a bid on your freight.', io);
+
   res.status(201).json({
     statusCode: 201,
     message: "Successfully created bid",
@@ -116,7 +134,11 @@ exports.createBid = catchAsync(async (req, res, next) => {
 
 // --------------------------- GET BID ---------------------------//
 exports.getBid = catchAsync(async (req, res, next) => {
-  const bidding = await Bids.findById(req.params.id);
+  const bidding = await Bids.findById(req.params.id)
+    .populate({
+      path: "freightOwnerId",
+      select: "firstName lastName ratingAverage profileImage",
+    });
   if (!bidding) {
     return next(new AppError("No bid found with that id", 404));
   }
@@ -127,6 +149,96 @@ exports.getBid = catchAsync(async (req, res, next) => {
     data: {
       bidding,
     },
+  });
+});
+
+// --------------------------- ACCEPT BID ---------------------------//
+exports.acceptBid = catchAsync(async (req, res, next) => {
+  const bid = await Bids.findById(req.params.id);
+
+  if (!bid) {
+    return next(new AppError("No bid found with that id", 404));
+  }
+
+  // Only the freight owner can accept
+  if (bid.freightOwnerId.toString() !== req.user.id) {
+    return next(new AppError("You are not authorized to accept this bid", 403));
+  }
+
+  if (bid.status !== "PENDING") {
+    return next(
+      new AppError(
+        `Cannot accept a bid with status ${bid.status}. Only PENDING bids can be accepted`,
+        400,
+      ),
+    );
+  }
+
+  const freight = await Freight.findById(bid.freightId);
+
+  if (!freight) {
+    return next(new AppError("Freight not found", 404));
+  }
+
+  if (freight.status === "BOOKED") {
+    return next(
+      new AppError("This freight is already booked by another carrier", 409),
+    );
+  }
+
+  // Accept this bid
+  bid.status = "ACCEPTED";
+  await bid.save();
+
+  // Mark freight as BOOKED
+  freight.status = "BOOKED";
+  await freight.save();
+
+  // Auto-reject all other pending bids for the same freight
+  const autoRejected = await Bids.updateMany(
+    { freightId: bid.freightId, status: "PENDING", _id: { $ne: bid._id } },
+    { status: "REJECTED" },
+  );
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Bid accepted successfully",
+    data: {
+      bid,
+      autoRejectedCount: autoRejected.modifiedCount,
+    },
+  });
+});
+
+// --------------------------- REJECT BID ---------------------------//
+exports.rejectBid = catchAsync(async (req, res, next) => {
+  const bid = await Bids.findById(req.params.id);
+
+  if (!bid) {
+    return next(new AppError("No bid found with that id", 404));
+  }
+
+  // Only the freight owner can reject
+  if (bid.freightOwnerId.toString() !== req.user.id) {
+    return next(new AppError("You are not authorized to reject this bid", 403));
+  }
+
+  if (bid.status !== "PENDING") {
+    return next(
+      new AppError(
+        `Cannot reject a bid with status ${bid.status}. Only PENDING bids can be rejected`,
+        400,
+      ),
+    );
+  }
+
+  bid.status = "REJECTED";
+  await bid.save();
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Bid rejected successfully",
+    data: { bid },
   });
 });
 
@@ -201,7 +313,7 @@ exports.updateBid = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Bids updated successfully",
-    data: updatedBids,
+    data: updatedBid,
   });
 });
 

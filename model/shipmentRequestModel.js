@@ -86,6 +86,6 @@ const requestSchema = new Schema(
 );
 
 // One request per carrier per freight owner
-requestSchema.index({ carrierId: 1, freightOwnerId: 1 }, { unique: true });
+requestSchema.index({ carrierId: 1, freightIds: 1 }, { unique: true });
 
 module.exports = model("ShipmentRequest", requestSchema);
