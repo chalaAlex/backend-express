@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const errorController = require("./controller/errorController");
 const app = express();
-const fabricToken = require("../backend-express/services/applyFabricTokenService");
+// const fabricToken = require("../backend-express/services/applyFabricTokenService");
 
 // Routers
 const userRouter = require("./routes/userRoutes");
