@@ -9,6 +9,11 @@ const driverSchema = new mongoose.Schema({
 
   licenseExpiry: Date,
 
+  licenseImage: {
+    type: String,
+    trim: true,
+  },
+
   assignedTruck: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Carrier",

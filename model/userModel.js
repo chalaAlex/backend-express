@@ -20,10 +20,19 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: function () {
+        return this.role !== "driver";
+      },
       unique: true,
+      sparse: true,
       lowercase: true,
-      validate: [validator.isEmail, "Please provide a valid email"],
+      validate: {
+        validator: function (v) {
+          if (!v) return true; // allow empty for drivers
+          return validator.isEmail(v);
+        },
+        message: "Please provide a valid email",
+      },
     },
     phone: {
       type: String,
@@ -32,15 +41,21 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please provide a password"],
+      required: function () {
+        return this.role !== "driver";
+      },
       minLength: 8,
       select: false,
     },
     passwordConfirm: {
       type: String,
-      required: [true, "Please confirm your password"],
+      required: function () {
+        return this.role !== "driver";
+      },
       validate: {
         validator: function (el) {
+          // Only validate if both fields are present
+          if (!el && this.role === "driver") return true;
           return el === this.password;
         },
         message: "Passwords are not the same!",

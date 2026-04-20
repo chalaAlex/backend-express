@@ -12,6 +12,7 @@ const filterObj = require("../utils/filterObj");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const User = require("./../model/userModel");
+const Driver = require("./../model/driverModel");
 
 // -------------------- GET ALL carriers -----------------//
 exports.getAllCarriers = catchAsync(async (req, res) => {
@@ -379,14 +380,21 @@ exports.assignDriverToCarrier = catchAsync(async (req, res, next) => {
     return next(new AppError("No carrier is found with that id", 404));
   }
 
-  // Check if driver exists and is actually a driver
-  const driver = await User.findOne({
-    _id: driverId,
-    role: "driver"
-  });
+  // Ownership check on carrier
+  if (carrier.truckOwner.toString() !== req.user.id) {
+    return next(new AppError("You do not have permission to access this carrier", 403));
+  }
+
+  // Check if driver exists using Driver model
+  const driver = await Driver.findById(driverId);
 
   if (!driver) {
     return next(new AppError("No driver is found with that id", 404));
+  }
+
+  // Ownership check on driver
+  if (driver.carrierOwner.toString() !== req.user.id) {
+    return next(new AppError("You do not have permission to access this driver", 403));
   }
 
   // Check if driver is already assigned to this carrier
@@ -397,6 +405,10 @@ exports.assignDriverToCarrier = catchAsync(async (req, res, next) => {
   // Add driver to carrier's driver array
   carrier.driver.push(driverId);
   await carrier.save();
+
+  // Update driver's assignedTruck
+  driver.assignedTruck = carrierId;
+  await driver.save();
 
   // Populate the updated carrier with driver details
   const updatedCarrier = await Carrier.findById(carrierId)
@@ -438,14 +450,33 @@ exports.removeDriverFromCarrier = catchAsync(async (req, res, next) => {
     return next(new AppError("No carrier is found with that id", 404));
   }
 
+  // Ownership check on carrier
+  if (carrier.truckOwner.toString() !== req.user.id) {
+    return next(new AppError("You do not have permission to access this carrier", 403));
+  }
+
   // Check if driver is assigned to this carrier
   if (!carrier.driver.includes(driverId)) {
     return next(new AppError("Driver is not assigned to this carrier", 400));
   }
 
+  // Fetch driver and check ownership
+  const driver = await Driver.findById(driverId);
+  if (!driver) {
+    return next(new AppError("No driver is found with that id", 404));
+  }
+
+  if (driver.carrierOwner.toString() !== req.user.id) {
+    return next(new AppError("You do not have permission to access this driver", 403));
+  }
+
   // Remove driver from carrier's driver array
   carrier.driver = carrier.driver.filter(id => id.toString() !== driverId);
   await carrier.save();
+
+  // Clear driver's assignedTruck
+  driver.assignedTruck = null;
+  await driver.save();
 
   // Populate the updated carrier with driver details
   const updatedCarrier = await Carrier.findById(carrierId)

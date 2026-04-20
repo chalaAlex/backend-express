@@ -9,49 +9,42 @@ const Driver = require("../model/driverModel");
 
 // -------------------- CREATE Driver --------------------//
 exports.createDriver = catchAsync(async (req, res, next) => {
-  // Extract driver-specific fields
-  const { licenseNumber, licenseExpiry, assignedTruck, carrierOwner, ...userFields } = req.body;
+  const { licenseNumber, licenseExpiry, licenseImage, assignedTruck, firstName, lastName, phone } = req.body;
 
-  // Ensure role is set to driver
-  userFields.role = "driver";
+  if (!firstName) return next(new AppError("First name is required", 400));
+  if (!lastName) return next(new AppError("Last name is required", 400));
+  if (!phone) return next(new AppError("Phone number is required", 400));
+  if (!licenseNumber) return next(new AppError("License number is required", 400));
+  if (!licenseImage) return next(new AppError("License image is required", 400));
 
-  // Validate required driver fields
-  if (!licenseNumber) {
-    return next(new AppError("License number is required", 400));
-  }
-
-  // Validate assignedTruck if provided
   if (assignedTruck && !mongoose.Types.ObjectId.isValid(assignedTruck)) {
     return next(new AppError("Invalid assigned truck id", 400));
   }
 
-  // Validate carrierOwner if provided
-  if (carrierOwner && !mongoose.Types.ObjectId.isValid(carrierOwner)) {
-    return next(new AppError("Invalid carrier owner id", 400));
-  }
-
   try {
-    // Create driver with all fields using User model
+    // Auto-generate a unique placeholder email so the User discriminator is satisfied
+    const placeholderEmail = `driver.${phone.replace(/\D/g, "")}@internal.fleet`;
+
     const driverData = {
-      ...userFields,
+      firstName,
+      lastName,
+      phone,
+      email: placeholderEmail,
+      role: "driver",
       licenseNumber,
       licenseExpiry: licenseExpiry ? new Date(licenseExpiry) : undefined,
+      licenseImage,
       assignedTruck,
-      carrierOwner,
+      carrierOwner: req.user.id,
     };
 
     const newDriver = new Driver(driverData);
     await newDriver.save();
 
-    // Remove password from response
-    newDriver.password = undefined;
-
     res.status(201).json({
       statusCode: 201,
       message: "Driver created successfully",
-      data: {
-        driver: newDriver,
-      },
+      data: { driver: newDriver },
     });
   } catch (error) {
     if (error.code === 11000) {
@@ -60,6 +53,23 @@ exports.createDriver = catchAsync(async (req, res, next) => {
     }
     return next(error);
   }
+});
+
+// -------------------- GET My Drivers (carrier_owner) ---//
+exports.getMyDrivers = catchAsync(async (req, res) => {
+  const drivers = await Driver.find({ carrierOwner: req.user.id }).populate(
+    "assignedTruck",
+    "model plateNumber brand loadCapacity"
+  );
+
+  res.status(200).json({
+    statusCode: 200,
+    message: "Successfully retrieved your drivers",
+    total: drivers.length,
+    data: {
+      drivers,
+    },
+  });
 });
 
 // -------------------- GET ALL Drivers ------------------//
@@ -100,6 +110,10 @@ exports.getDriver = catchAsync(async (req, res, next) => {
     return next(new AppError("Driver not found", 404));
   }
 
+  if (driver.carrierOwner.toString() !== req.user.id) {
+    return next(new AppError('You do not have permission to access this driver', 403));
+  }
+
   res.status(200).json({
     statusCode: 200,
     message: "Driver retrieved successfully",
@@ -117,7 +131,17 @@ exports.updateDriver = catchAsync(async (req, res, next) => {
     return next(new AppError("Invalid driver id", 400));
   }
 
-  // Define allowed fields for update
+  // Fetch first to check ownership
+  const driver = await Driver.findById(id);
+  if (!driver) {
+    return next(new AppError("Driver not found", 404));
+  }
+
+  if (driver.carrierOwner.toString() !== req.user.id) {
+    return next(new AppError('You do not have permission to access this driver', 403));
+  }
+
+  // Define allowed fields for update (carrierOwner is intentionally excluded)
   const allowedFields = [
     "firstName",
     "lastName",
@@ -126,8 +150,8 @@ exports.updateDriver = catchAsync(async (req, res, next) => {
     "profileImage",
     "licenseNumber",
     "licenseExpiry",
+    "licenseImage",
     "assignedTruck",
-    "carrierOwner",
   ];
 
   const filteredBody = filterObj(req.body, allowedFields);
@@ -135,11 +159,6 @@ exports.updateDriver = catchAsync(async (req, res, next) => {
   // Validate assignedTruck if provided
   if (filteredBody.assignedTruck && !mongoose.Types.ObjectId.isValid(filteredBody.assignedTruck)) {
     return next(new AppError("Invalid assigned truck id", 400));
-  }
-
-  // Validate carrierOwner if provided
-  if (filteredBody.carrierOwner && !mongoose.Types.ObjectId.isValid(filteredBody.carrierOwner)) {
-    return next(new AppError("Invalid carrier owner id", 400));
   }
 
   // Convert licenseExpiry to Date if provided
@@ -154,10 +173,6 @@ exports.updateDriver = catchAsync(async (req, res, next) => {
     })
       .populate("assignedTruck", "model plateNumber brand loadCapacity")
       .populate("carrierOwner", "firstName lastName phone email");
-
-    if (!updatedDriver) {
-      return next(new AppError("Driver not found", 404));
-    }
 
     res.status(200).json({
       statusCode: 200,
@@ -187,6 +202,10 @@ exports.deleteDriver = catchAsync(async (req, res, next) => {
   const driver = await Driver.findById(id);
   if (!driver) {
     return next(new AppError("Driver not found", 404));
+  }
+
+  if (driver.carrierOwner.toString() !== req.user.id) {
+    return next(new AppError('You do not have permission to access this driver', 403));
   }
 
   // Remove driver from any carriers they're assigned to

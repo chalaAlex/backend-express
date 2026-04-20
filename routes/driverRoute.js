@@ -14,6 +14,15 @@ router
     driverController.createDriver
   );
 
+// Route for carrier_owner to list their own drivers
+router
+  .route("/my-drivers")
+  .get(
+    authController.protect,
+    authController.restrictTo("carrier_owner"),
+    driverController.getMyDrivers
+  );
+
 // Route for driver to get their assigned truck
 router
   .route("/my-truck")
@@ -34,7 +43,7 @@ router
   )
   .delete(
     authController.protect,
-    authController.restrictTo("admin"),
+    authController.restrictTo("admin", "carrier_owner"),
     driverController.deleteDriver
   );
 
