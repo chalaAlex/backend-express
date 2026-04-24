@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Payment = require('../model/paymentModel');
@@ -32,7 +31,6 @@ exports.resolveDispute = catchAsync(async (req, res, next) => {
   }
 
   if (resolution === 'RELEASE') {
-    // Temporarily set to HELD so releasePayment can process it
     payment.status = 'HELD';
     await payment.save();
     const released = await releasePayment(payment._id);
@@ -40,42 +38,24 @@ exports.resolveDispute = catchAsync(async (req, res, next) => {
   }
 
   if (resolution === 'REFUND') {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-      payment.status = 'REFUNDED';
-      await payment.save({ session });
+    payment.status = 'REFUNDED';
+    await payment.save();
 
-      // Reverse the HOLD transaction by decrementing pendingBalance
-      await Wallet.findOneAndUpdate(
-        { carrierOwnerId: payment.carrierOwnerId },
-        { $inc: { pendingBalance: -payment.carrierAmount } },
-        { session },
-      );
+    // Reverse the HOLD — decrement carrier's pendingBalance
+    const wallet = await Wallet.findOneAndUpdate(
+      { carrierOwnerId: payment.carrierOwnerId },
+      { $inc: { pendingBalance: -payment.carrierAmount } },
+      { new: true },
+    );
 
-      // Mark the original HOLD transaction as reversed via a CREDIT entry
-      const wallet = await Wallet.findOne({ carrierOwnerId: payment.carrierOwnerId }).session(session);
-      if (wallet) {
-        await WalletTransaction.create(
-          [
-            {
-              walletId: wallet._id,
-              paymentId: payment._id,
-              type: 'CREDIT',
-              amount: -payment.carrierAmount,
-              description: `Refund reversal for disputed payment ${payment._id}`,
-            },
-          ],
-          { session },
-        );
-      }
-
-      await session.commitTransaction();
-      session.endSession();
-    } catch (err) {
-      await session.abortTransaction();
-      session.endSession();
-      throw err;
+    if (wallet) {
+      await WalletTransaction.create({
+        walletId: wallet._id,
+        paymentId: payment._id,
+        type: 'CREDIT',
+        amount: -payment.carrierAmount,
+        description: `Refund reversal for disputed payment ${payment._id}`,
+      });
     }
 
     return res.status(200).json({ status: 'success', data: { payment } });
@@ -114,43 +94,25 @@ exports.processWithdrawal = catchAsync(async (req, res, next) => {
   const now = new Date();
 
   if (status === 'APPROVED') {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-      const wallet = await Wallet.findById(withdrawal.walletId).session(session);
-      if (!wallet || wallet.balance < withdrawal.amount) {
-        await session.abortTransaction();
-        session.endSession();
-        return next(new AppError('Insufficient wallet balance', 400));
-      }
-
-      wallet.balance -= withdrawal.amount;
-      await wallet.save({ session });
-
-      await WalletTransaction.create(
-        [
-          {
-            walletId: wallet._id,
-            paymentId: null,
-            type: 'DEBIT',
-            amount: withdrawal.amount,
-            description: `Withdrawal approved for carrier ${withdrawal.carrierOwnerId}`,
-          },
-        ],
-        { session },
-      );
-
-      withdrawal.status = 'APPROVED';
-      withdrawal.processedAt = now;
-      await withdrawal.save({ session });
-
-      await session.commitTransaction();
-      session.endSession();
-    } catch (err) {
-      await session.abortTransaction();
-      session.endSession();
-      throw err;
+    const wallet = await Wallet.findById(withdrawal.walletId);
+    if (!wallet || wallet.balance < withdrawal.amount) {
+      return next(new AppError('Insufficient wallet balance', 400));
     }
+
+    wallet.balance -= withdrawal.amount;
+    await wallet.save();
+
+    await WalletTransaction.create({
+      walletId: wallet._id,
+      paymentId: null,
+      type: 'DEBIT',
+      amount: withdrawal.amount,
+      description: `Withdrawal approved for carrier ${withdrawal.carrierOwnerId}`,
+    });
+
+    withdrawal.status = 'APPROVED';
+    withdrawal.processedAt = now;
+    await withdrawal.save();
 
     return res.status(200).json({ status: 'success', data: { withdrawal } });
   }

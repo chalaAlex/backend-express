@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const fs = require("fs");
 const dotenv = require("dotenv");
+const path = require("path");
 
-// Fix the path to config.env
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: path.resolve(__dirname, '../../config.env') });
 
 const Freight = require("./../../model/freightModel");
 const Carrier = require("./../../model/carrierModel");
@@ -25,6 +25,16 @@ mongoose
     console.log("ERROR: " + err);
     process.exit(1);
   });
+
+
+// const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
+
+// mongoose.connect(DB, {
+//   // useNewUrlParser: true,
+// }).then(() => console.log('Remote database connection successfull!')).catch(err => {
+//   console.log("ERROR: " + err);
+// });
+
 
 const carriers = JSON.parse(
   fs.readFileSync(`${__dirname}/carriers.json`, "utf-8"),

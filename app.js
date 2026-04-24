@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const errorController = require("./controller/errorController");
 const app = express();
 // const fabricToken = require("../backend-express/services/applyFabricTokenService");
@@ -31,6 +32,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 // 1) MIDDLEWARES
+app.use(cors({ origin: '*', credentials: false }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {

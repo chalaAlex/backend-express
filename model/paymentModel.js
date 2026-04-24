@@ -12,12 +12,12 @@ const paymentSchema = new Schema(
     totalAmount: { type: Number, required: true },
     platformFee: { type: Number, required: true }, // 10% of totalAmount
     carrierAmount: { type: Number, required: true }, // 90% of totalAmount
+    gateway: { type: String, enum: ['telebirr', 'cbe', 'chapa'], required: true },
     status: {
       type: String,
       enum: ['PENDING', 'HELD', 'RELEASED', 'DISPUTED', 'REFUNDED'],
       default: 'PENDING',
     },
-    telebirrTransactionId: { type: String },
     paidAt: { type: Date },
     releasedAt: { type: Date },
     releaseAt: { type: Date }, // paidAt + 2 days

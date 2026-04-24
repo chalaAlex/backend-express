@@ -1,43 +1,517 @@
 [
   {
-    "freightOwnerId": "65a8ee92a123bc9010fed321",
-
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
     "cargo": {
-      "type": "Construction Materials",
-      "description": "Cement bags",
+      "type": "Grains",
+      "description": "Wheat sacks",
       "weightKg": 12000,
       "quantity": 240
     },
-
     "route": {
       "pickup": {
-        "city": "Addis Ababa",
-        "address": "Akaki Industrial Area"
+        "region": "Oromia",
+        "city": "Jimma",
+        "address": "Warehouse A"
       },
       "dropoff": {
-        "city": "Adama",
-        "address": "Main Warehouse Zone"
+        "region": "Addis Ababa",
+        "city": "Addis Ababa",
+        "address": "Merkato"
       },
-      "distanceKm": 100
+      "distanceKm": 350
     },
-
     "schedule": {
-      "pickupDate": "2026-01-10T00:00:00.000Z",
-      "deliveryDeadline": "2026-01-11T00:00:00.000Z"
+      "pickupDate": "2026-04-25T08:00:00Z",
+      "deliveryDeadline": "2026-04-27T18:00:00Z"
     },
-
     "truckRequirement": {
-      "type": "FLATBED",
+      "type": "BOX",
       "minCapacityKg": 15000
     },
-
     "pricing": {
-      "type": "BID",
-      "amount": null
+      "type": "NEGOTIABLE"
     },
-
     "status": "OPEN",
-    "createdAt": "2026-01-05T09:30:00.000Z",
-    "updatedAt": "2026-01-05T09:30:00.000Z"
+    "image": [
+      "https://picsum.photos/200"
+    ],
+    "bidCount": 2,
+    "isAvailable": true
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Coffee",
+      "description": "Export quality beans",
+      "weightKg": 8000,
+      "quantity": 160
+    },
+    "route": {
+      "pickup": {
+        "region": "Oromia",
+        "city": "Jimma",
+        "address": "Coffee Union"
+      },
+      "dropoff": {
+        "region": "Dire Dawa",
+        "city": "Dire Dawa",
+        "address": "Dry Port"
+      },
+      "distanceKm": 520
+    },
+    "schedule": {
+      "pickupDate": "2026-04-26T09:00:00Z",
+      "deliveryDeadline": "2026-04-29T17:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "FLATBED",
+      "minCapacityKg": 10000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 25000
+    },
+    "status": "BIDDING",
+    "image": [
+      "https://picsum.photos/201"
+    ],
+    "bidCount": 5,
+    "isAvailable": true
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Cement",
+      "description": "Dangote cement bags",
+      "weightKg": 20000,
+      "quantity": 400
+    },
+    "route": {
+      "pickup": {
+        "region": "Oromia",
+        "city": "Adama",
+        "address": "Factory"
+      },
+      "dropoff": {
+        "region": "Amhara",
+        "city": "Bahir Dar",
+        "address": "Construction site"
+      },
+      "distanceKm": 560
+    },
+    "schedule": {
+      "pickupDate": "2026-04-27T07:00:00Z",
+      "deliveryDeadline": "2026-04-30T16:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "FLATBED",
+      "minCapacityKg": 25000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 40000
+    },
+    "status": "OPEN",
+    "image": [
+      "https://picsum.photos/202"
+    ],
+    "bidCount": 1,
+    "isAvailable": true
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Fuel",
+      "description": "Diesel transport",
+      "weightKg": 18000,
+      "quantity": 1
+    },
+    "route": {
+      "pickup": {
+        "region": "Somali",
+        "city": "Jijiga",
+        "address": "Fuel Depot"
+      },
+      "dropoff": {
+        "region": "Oromia",
+        "city": "Harar",
+        "address": "Station"
+      },
+      "distanceKm": 90
+    },
+    "schedule": {
+      "pickupDate": "2026-04-28T06:00:00Z",
+      "deliveryDeadline": "2026-04-28T12:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "TANKER",
+      "minCapacityKg": 20000
+    },
+    "pricing": {
+      "type": "NEGOTIABLE"
+    },
+    "status": "BOOKED",
+    "image": [
+      "https://picsum.photos/203"
+    ],
+    "bidCount": 3,
+    "isAvailable": false
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Vegetables",
+      "description": "Fresh tomatoes",
+      "weightKg": 6000,
+      "quantity": 120
+    },
+    "route": {
+      "pickup": {
+        "region": "SNNP",
+        "city": "Hawassa",
+        "address": "Farm"
+      },
+      "dropoff": {
+        "region": "Addis Ababa",
+        "city": "Addis Ababa",
+        "address": "Market"
+      },
+      "distanceKm": 275
+    },
+    "schedule": {
+      "pickupDate": "2026-04-25T05:00:00Z",
+      "deliveryDeadline": "2026-04-25T20:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "REFRIGERATED",
+      "minCapacityKg": 8000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 18000
+    },
+    "status": "IN_TRANSIT",
+    "image": [
+      "https://picsum.photos/204"
+    ],
+    "bidCount": 4,
+    "isAvailable": false
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Steel",
+      "description": "Construction rods",
+      "weightKg": 22000,
+      "quantity": 300
+    },
+    "route": {
+      "pickup": {
+        "region": "Addis Ababa",
+        "city": "Addis Ababa",
+        "address": "Industrial Zone"
+      },
+      "dropoff": {
+        "region": "Tigray",
+        "city": "Mekelle",
+        "address": "Site B"
+      },
+      "distanceKm": 780
+    },
+    "schedule": {
+      "pickupDate": "2026-04-29T08:00:00Z",
+      "deliveryDeadline": "2026-05-02T18:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "LOWBED",
+      "minCapacityKg": 30000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 60000
+    },
+    "status": "OPEN",
+    "image": [
+      "https://picsum.photos/205"
+    ],
+    "bidCount": 0,
+    "isAvailable": true
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Water Bottles",
+      "description": "Packaged drinking water",
+      "weightKg": 9000,
+      "quantity": 500
+    },
+    "route": {
+      "pickup": {
+        "region": "Amhara",
+        "city": "Gondar",
+        "address": "Factory"
+      },
+      "dropoff": {
+        "region": "Addis Ababa",
+        "city": "Addis Ababa",
+        "address": "Retail Hub"
+      },
+      "distanceKm": 730
+    },
+    "schedule": {
+      "pickupDate": "2026-04-30T07:30:00Z",
+      "deliveryDeadline": "2026-05-02T15:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "BOX",
+      "minCapacityKg": 12000
+    },
+    "pricing": {
+      "type": "NEGOTIABLE"
+    },
+    "status": "BIDDING",
+    "image": [
+      "https://picsum.photos/206"
+    ],
+    "bidCount": 6,
+    "isAvailable": true
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Fruits",
+      "description": "Bananas",
+      "weightKg": 7000,
+      "quantity": 200
+    },
+    "route": {
+      "pickup": {
+        "region": "SNNP",
+        "city": "Arba Minch",
+        "address": "Farm Zone"
+      },
+      "dropoff": {
+        "region": "Oromia",
+        "city": "Shashamane",
+        "address": "Market"
+      },
+      "distanceKm": 300
+    },
+    "schedule": {
+      "pickupDate": "2026-04-28T05:00:00Z",
+      "deliveryDeadline": "2026-04-28T20:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "REFRIGERATED",
+      "minCapacityKg": 8000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 15000
+    },
+    "status": "COMPLETED",
+    "image": [
+      "https://picsum.photos/207"
+    ],
+    "bidCount": 2,
+    "isAvailable": false
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Machinery",
+      "description": "Heavy equipment",
+      "weightKg": 30000,
+      "quantity": 5
+    },
+    "route": {
+      "pickup": {
+        "region": "Oromia",
+        "city": "Adama",
+        "address": "Warehouse"
+      },
+      "dropoff": {
+        "region": "Somali",
+        "city": "Jijiga",
+        "address": "Project Site"
+      },
+      "distanceKm": 600
+    },
+    "schedule": {
+      "pickupDate": "2026-05-01T06:00:00Z",
+      "deliveryDeadline": "2026-05-04T18:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "LOWBED",
+      "minCapacityKg": 35000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 75000
+    },
+    "status": "OPEN",
+    "image": [
+      "https://picsum.photos/208"
+    ],
+    "bidCount": 1,
+    "isAvailable": true
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Textiles",
+      "description": "Clothing materials",
+      "weightKg": 5000,
+      "quantity": 150
+    },
+    "route": {
+      "pickup": {
+        "region": "Tigray",
+        "city": "Mekelle",
+        "address": "Factory"
+      },
+      "dropoff": {
+        "region": "Addis Ababa",
+        "city": "Addis Ababa",
+        "address": "Store"
+      },
+      "distanceKm": 780
+    },
+    "schedule": {
+      "pickupDate": "2026-05-02T09:00:00Z",
+      "deliveryDeadline": "2026-05-05T17:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "BOX",
+      "minCapacityKg": 7000
+    },
+    "pricing": {
+      "type": "NEGOTIABLE"
+    },
+    "status": "CANCELLED",
+    "image": [
+      "https://picsum.photos/209"
+    ],
+    "bidCount": 0,
+    "isAvailable": false
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Oil",
+      "description": "Edible oil",
+      "weightKg": 15000,
+      "quantity": 100
+    },
+    "route": {
+      "pickup": {
+        "region": "Oromia",
+        "city": "Jimma",
+        "address": "Factory"
+      },
+      "dropoff": {
+        "region": "Amhara",
+        "city": "Dessie",
+        "address": "Warehouse"
+      },
+      "distanceKm": 650
+    },
+    "schedule": {
+      "pickupDate": "2026-05-03T08:00:00Z",
+      "deliveryDeadline": "2026-05-06T18:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "TANKER",
+      "minCapacityKg": 20000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 42000
+    },
+    "status": "OPEN",
+    "image": [
+      "https://picsum.photos/210"
+    ],
+    "bidCount": 3,
+    "isAvailable": true
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Sand",
+      "description": "Construction sand",
+      "weightKg": 25000,
+      "quantity": 1
+    },
+    "route": {
+      "pickup": {
+        "region": "Oromia",
+        "city": "Bishoftu",
+        "address": "Quarry"
+      },
+      "dropoff": {
+        "region": "Addis Ababa",
+        "city": "Addis Ababa",
+        "address": "Site"
+      },
+      "distanceKm": 50
+    },
+    "schedule": {
+      "pickupDate": "2026-05-01T07:00:00Z",
+      "deliveryDeadline": "2026-05-01T12:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "FLATBED",
+      "minCapacityKg": 30000
+    },
+    "pricing": {
+      "type": "NEGOTIABLE"
+    },
+    "status": "IN_TRANSIT",
+    "image": [
+      "https://picsum.photos/211"
+    ],
+    "bidCount": 2,
+    "isAvailable": false
+  },
+  {
+    "freightOwnerId": "69e737876bb1eb8626c8ba01",
+    "cargo": {
+      "type": "Electronics",
+      "description": "TV sets",
+      "weightKg": 4000,
+      "quantity": 80
+    },
+    "route": {
+      "pickup": {
+        "region": "Addis Ababa",
+        "city": "Addis Ababa",
+        "address": "Warehouse"
+      },
+      "dropoff": {
+        "region": "Oromia",
+        "city": "Jimma",
+        "address": "Retail Shop"
+      },
+      "distanceKm": 350
+    },
+    "schedule": {
+      "pickupDate": "2026-05-04T10:00:00Z",
+      "deliveryDeadline": "2026-05-05T18:00:00Z"
+    },
+    "truckRequirement": {
+      "type": "BOX",
+      "minCapacityKg": 6000
+    },
+    "pricing": {
+      "type": "FIXED",
+      "amount": 20000
+    },
+    "status": "OPEN",
+    "image": [
+      "https://picsum.photos/212"
+    ],
+    "bidCount": 4,
+    "isAvailable": true
   }
 ]

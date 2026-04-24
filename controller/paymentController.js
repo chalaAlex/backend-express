@@ -1,5 +1,4 @@
 const crypto = require('crypto');
-const mongoose = require('mongoose');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Payment = require('../model/paymentModel');
@@ -8,67 +7,70 @@ const Wallet = require('../model/walletModel');
 const WalletTransaction = require('../model/walletTransactionModel');
 const ShipmentRequest = require('../model/shipmentRequestModel');
 const Bids = require('../model/bidsModel');
-const telebirrService = require('../services/telebirrService');
+const User = require('../model/userModel');
 const { releasePayment } = require('../services/releasePaymentService');
+const { notify } = require('../utils/emailNotificationService');
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 async function resolveBooking(bookingType, sourceId, freightOwnerId) {
   if (bookingType === 'REQUEST') {
     let req = await ShipmentRequest.findOne({ _id: sourceId, freightOwnerId });
-    if (!req) {
-      req = await ShipmentRequest.findOne({ freightIds: sourceId, freightOwnerId });
-    }
+    if (!req) req = await ShipmentRequest.findOne({ freightIds: sourceId, freightOwnerId });
     if (!req) return null;
     return {
       freightId: req.freightIds[0],
       carrierOwnerId: req.carrierOwnerId,
       totalAmount: req.proposedPrice,
       resolvedSourceId: req._id,
+      resolvedBookingType: 'REQUEST',
     };
-  } else if (bookingType === 'BID') {
+  }
+
+  if (bookingType === 'BID') {
     let bid = await Bids.findOne({ _id: sourceId, freightOwnerId });
-    if (!bid) {
-      bid = await Bids.findOne({ freightId: sourceId, freightOwnerId });
-    }
+    if (!bid) bid = await Bids.findOne({ freightId: sourceId, freightOwnerId });
     if (!bid) return null;
     return {
       freightId: bid.freightId,
       carrierOwnerId: bid.carrierOwnerId,
       totalAmount: bid.bidAmount,
       resolvedSourceId: bid._id,
+      resolvedBookingType: 'BID',
     };
-  } else if (bookingType === 'AUTO') {
-    // Try ShipmentRequest first, then Bid — sourceId is always the freightId
-    const req = await ShipmentRequest.findOne({ freightIds: sourceId, freightOwnerId });
-    if (req) {
-      return {
-        freightId: req.freightIds[0],
-        carrierOwnerId: req.carrierOwnerId,
-        totalAmount: req.proposedPrice,
-        resolvedSourceId: req._id,
-        resolvedBookingType: 'REQUEST',
-      };
-    }
-    const bid = await Bids.findOne({ freightId: sourceId, freightOwnerId });
-    if (bid) {
-      return {
-        freightId: bid.freightId,
-        carrierOwnerId: bid.carrierOwnerId,
-        totalAmount: bid.bidAmount,
-        resolvedSourceId: bid._id,
-        resolvedBookingType: 'BID',
-      };
-    }
-    return null;
+  }
+
+  // AUTO — sourceId is the freightId, try REQUEST first then BID
+  const req = await ShipmentRequest.findOne({ freightIds: sourceId, freightOwnerId });
+  if (req) {
+    return {
+      freightId: req.freightIds[0],
+      carrierOwnerId: req.carrierOwnerId,
+      totalAmount: req.proposedPrice,
+      resolvedSourceId: req._id,
+      resolvedBookingType: 'REQUEST',
+    };
+  }
+  const bid = await Bids.findOne({ freightId: sourceId, freightOwnerId });
+  if (bid) {
+    return {
+      freightId: bid.freightId,
+      carrierOwnerId: bid.carrierOwnerId,
+      totalAmount: bid.bidAmount,
+      resolvedSourceId: bid._id,
+      resolvedBookingType: 'BID',
+    };
   }
   return null;
 }
 
 // ─── Controllers ────────────────────────────────────────────────────────────
 
+// POST /payments/initiate
+// Freight owner selects a gateway and creates a PENDING payment record.
+// No external API is called — the app navigates to the mock checkout screen.
 exports.initiatePayment = catchAsync(async (req, res, next) => {
-  const { bookingType, sourceId } = req.body;
+  const { bookingType, sourceId, gateway } = req.body;
 
   if (!bookingType || !sourceId) {
     return next(new AppError('bookingType and sourceId are required', 400));
@@ -76,19 +78,30 @@ exports.initiatePayment = catchAsync(async (req, res, next) => {
   if (!['REQUEST', 'BID', 'AUTO'].includes(bookingType)) {
     return next(new AppError('bookingType must be REQUEST, BID, or AUTO', 400));
   }
+  if (!['telebirr', 'cbe', 'chapa'].includes(gateway)) {
+    return next(new AppError('gateway must be telebirr, cbe, or chapa', 400));
+  }
 
   const booking = await resolveBooking(bookingType, sourceId, req.user._id);
   if (!booking) return next(new AppError('Booking not found', 404));
 
-  const resolvedType = booking.resolvedBookingType || bookingType;
-  const resolvedSourceId = booking.resolvedSourceId || sourceId;
-
-  // Duplicate check
+  // Duplicate guard — if a PENDING payment already exists, return it so the
+  // user can resume the checkout they already started instead of erroring.
+  // If HELD or RELEASED, block it — booking is already paid.
   const existing = await Payment.findOne({
-    sourceId: resolvedSourceId,
-    status: { $in: ['HELD', 'RELEASED'] },
+    sourceId: booking.resolvedSourceId,
+    status: { $in: ['PENDING', 'HELD', 'RELEASED'] },
   });
-  if (existing) return next(new AppError('Booking has already been paid', 400));
+  if (existing) {
+    if (existing.status === 'PENDING') {
+      // Resume — return the existing pending payment so the app goes to checkout
+      return res.status(200).json({
+        status: 'success',
+        data: { payment: existing },
+      });
+    }
+    return next(new AppError('This booking has already been paid', 400));
+  }
 
   const { freightId, carrierOwnerId, totalAmount } = booking;
   const platformFee = parseFloat((totalAmount * 0.1).toFixed(2));
@@ -97,102 +110,89 @@ exports.initiatePayment = catchAsync(async (req, res, next) => {
 
   const payment = await Payment.create({
     outTradeNo,
-    bookingType: resolvedType,
-    sourceId: resolvedSourceId,
+    bookingType: booking.resolvedBookingType,
+    sourceId: booking.resolvedSourceId,
     freightId,
     freightOwnerId: req.user._id,
     carrierOwnerId,
     totalAmount,
     platformFee,
     carrierAmount,
+    gateway,
     status: 'PENDING',
-  });
-
-  const notifyUrl = `${process.env.APP_BASE_URL || 'http://localhost:3000'}/api/v1/payments/webhook`;
-  const returnUrl = `${process.env.APP_BASE_URL || 'http://localhost:3000'}/payment/success`;
-
-  const { toPayUrl } = await telebirrService.initiatePayment({
-    outTradeNo,
-    totalAmount,
-    notifyUrl,
-    returnUrl,
-    subject: `Freight payment ${freightId}`,
   });
 
   res.status(201).json({
     status: 'success',
-    data: { payment, toPayUrl },
+    data: { payment },
   });
 });
 
-exports.handleWebhook = catchAsync(async (req, res) => {
-  const signature = req.headers['x-telebirr-signature'];
-  const isValid = telebirrService.verifyWebhookSignature(req.body, signature);
-  if (!isValid) {
-    return res.status(400).json({ status: 'fail', message: 'Invalid webhook signature' });
-  }
+// POST /payments/confirm
+// Called when the user taps "Pay Now" on the mock checkout screen.
+// Runs the escrow operations sequentially (no transaction — local MongoDB
+// standalone does not support multi-document transactions).
+exports.confirmPayment = catchAsync(async (req, res, next) => {
+  const { outTradeNo } = req.body;
 
-  const { outTradeNo, transactionId, status: tbStatus } = req.body;
-
-  // Only process successful payments
-  if (tbStatus !== 'SUCCESS') {
-    return res.status(200).json({ status: 'success', message: 'Non-success event acknowledged' });
-  }
+  if (!outTradeNo) return next(new AppError('outTradeNo is required', 400));
 
   const payment = await Payment.findOne({ outTradeNo });
-  if (!payment) {
-    return res.status(200).json({ status: 'success', error: 'Payment not found' });
-  }
+  if (!payment) return next(new AppError('Payment not found', 404));
 
-  // Idempotency: already processed
   if (payment.status !== 'PENDING') {
-    return res.status(200).json({ status: 'success', message: 'Already processed' });
+    return next(new AppError('Payment has already been processed', 400));
   }
 
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  const now = new Date();
+  const releaseAt = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000); // +2 days
+
+  // 1. Move payment to HELD
+  payment.status = 'HELD';
+  payment.paidAt = now;
+  payment.releaseAt = releaseAt;
+  await payment.save();
+
+  // 2. Freight → IN_TRANSIT
+  await Freight.findByIdAndUpdate(payment.freightId, { status: 'IN_TRANSIT' });
+
+  // 3. Credit carrier's pending wallet balance
+  const wallet = await Wallet.findOneAndUpdate(
+    { carrierOwnerId: payment.carrierOwnerId },
+    {
+      $inc: { pendingBalance: payment.carrierAmount },
+      $setOnInsert: { currency: 'ETB', balance: 0 },
+    },
+    { upsert: true, new: true },
+  );
+
+  // 4. Record HOLD wallet transaction
+  await WalletTransaction.create({
+    walletId: wallet._id,
+    paymentId: payment._id,
+    type: 'HOLD',
+    amount: payment.carrierAmount,
+    description: `Escrow hold for freight ${payment.freightId}`,
+  });
+
+  // 5. Send email to carrier owner (non-blocking)
   try {
-    const now = new Date();
-    const releaseAt = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000); // +2 days
-
-    payment.status = 'HELD';
-    payment.telebirrTransactionId = transactionId;
-    payment.paidAt = now;
-    payment.releaseAt = releaseAt;
-    await payment.save({ session });
-
-    await Freight.findByIdAndUpdate(payment.freightId, { status: 'IN_TRANSIT' }, { session });
-
-    const wallet = await Wallet.findOneAndUpdate(
-      { carrierOwnerId: payment.carrierOwnerId },
-      { $inc: { pendingBalance: payment.carrierAmount }, $setOnInsert: { currency: 'ETB' } },
-      { upsert: true, new: true, session },
-    );
-
-    await WalletTransaction.create(
-      [
-        {
-          walletId: wallet._id,
-          paymentId: payment._id,
-          type: 'HOLD',
-          amount: payment.carrierAmount,
-          description: `Escrow hold for freight ${payment.freightId}`,
-        },
-      ],
-      { session },
-    );
-
-    await session.commitTransaction();
-    session.endSession();
+    const [carrier, freight] = await Promise.all([
+      User.findById(payment.carrierOwnerId).select('email firstName lastName'),
+      Freight.findById(payment.freightId).select('route schedule'),
+    ]);
+    await notify('payment.confirmed', { payment, carrier, freight });
   } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
-    throw err;
+    console.error('[confirmPayment] Email notification failed:', err.message);
   }
 
-  res.status(200).json({ status: 'success', message: 'Payment held in escrow' });
+  res.status(200).json({
+    status: 'success',
+    data: { payment },
+  });
 });
 
+// POST /payments/:id/release
 exports.releasePayment = catchAsync(async (req, res, next) => {
   const payment = await Payment.findById(req.params.id);
   if (!payment) return next(new AppError('Payment not found', 404));
@@ -205,10 +205,10 @@ exports.releasePayment = catchAsync(async (req, res, next) => {
   }
 
   const released = await releasePayment(payment._id);
-
   res.status(200).json({ status: 'success', data: { payment: released } });
 });
 
+// POST /payments/:id/dispute
 exports.disputePayment = catchAsync(async (req, res, next) => {
   const payment = await Payment.findById(req.params.id);
   if (!payment) return next(new AppError('Payment not found', 404));
@@ -221,12 +221,66 @@ exports.disputePayment = catchAsync(async (req, res, next) => {
   }
 
   payment.status = 'DISPUTED';
-  payment.releaseAt = undefined;
+  payment.releaseAt = undefined; // cron will skip it
   await payment.save();
 
   res.status(200).json({ status: 'success', data: { payment } });
 });
 
+// GET /payments/my-payments
+// Returns all payments for the logged-in user (works for both roles).
+exports.getMyPayments = catchAsync(async (req, res, next) => {
+  const userId = req.user._id;
+  const role = req.user.role;
+
+  const filter = role === 'carrier_owner'
+    ? { carrierOwnerId: userId }
+    : { freightOwnerId: userId };
+
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 20;
+  const skip = (page - 1) * limit;
+
+  const [payments, total] = await Promise.all([
+    Payment.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Payment.countDocuments(filter),
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: { payments, total, page, limit },
+  });
+});
+
+// GET /payments/by-freight/:freightId
+// Returns the active (HELD) payment for a freight so the owner can release it.
+exports.getPaymentByFreight = catchAsync(async (req, res, next) => {
+  const payment = await Payment.findOne({
+    freightId: req.params.freightId,
+    freightOwnerId: req.user._id,
+    status: 'HELD',
+  });
+  if (!payment) return next(new AppError('No active payment found for this freight', 404));
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      payment: {
+        _id: payment._id,
+        status: payment.status,
+        gateway: payment.gateway,
+        totalAmount: payment.totalAmount,
+        platformFee: payment.platformFee,
+        carrierAmount: payment.carrierAmount,
+        outTradeNo: payment.outTradeNo,
+        paidAt: payment.paidAt,
+        releaseAt: payment.releaseAt,
+      },
+    },
+  });
+});
+
+// GET /payments/:requestId
 exports.getPaymentStatus = catchAsync(async (req, res, next) => {
   const payment = await Payment.findById(req.params.requestId);
   if (!payment) return next(new AppError('Payment not found', 404));
@@ -245,13 +299,14 @@ exports.getPaymentStatus = catchAsync(async (req, res, next) => {
       payment: {
         _id: payment._id,
         status: payment.status,
+        gateway: payment.gateway,
         totalAmount: payment.totalAmount,
         platformFee: payment.platformFee,
         carrierAmount: payment.carrierAmount,
+        outTradeNo: payment.outTradeNo,
         paidAt: payment.paidAt,
         releasedAt: payment.releasedAt,
         releaseAt: payment.releaseAt,
-        outTradeNo: payment.outTradeNo,
       },
     },
   });

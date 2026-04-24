@@ -50,7 +50,7 @@
     "aboutTruck": "Reliable Mercedes truck used for import export cargo transport.",
     "isVerified": true,
     "isAvailable": true,
-    "isFeatured": false
+    "isFeatured": true
   },
   {
     "truckOwner": "66f1a2b3c4d5e6f700000003",
@@ -76,7 +76,7 @@
     "aboutTruck": "Efficient cargo truck transporting agricultural products.",
     "isVerified": false,
     "isAvailable": true,
-    "isFeatured": false
+    "isFeatured": true
   },
   {
     "truckOwner": "66f1a2b3c4d5e6f700000004",
@@ -154,7 +154,7 @@
     "aboutTruck": "High performance Scania truck for long haul freight transport.",
     "isVerified": true,
     "isAvailable": true,
-    "isFeatured": false
+    "isFeatured": true
   },
   {
     "truckOwner": "66f1a2b3c4d5e6f700000007",
@@ -180,7 +180,7 @@
     "aboutTruck": "Reliable Isuzu truck commonly used for regional cargo transport.",
     "isVerified": true,
     "isAvailable": true,
-    "isFeatured": false
+    "isFeatured": true
   },
   {
     "truckOwner": "66f1a2b3c4d5e6f700000008",

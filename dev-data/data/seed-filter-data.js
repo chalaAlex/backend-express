@@ -1,21 +1,24 @@
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+const dotenv = require('dotenv');
+const path = require('path');
 const Region = require("../../model/regionModel");
 const City = require("../../model/cityModel");
 const Brand = require("../../model/brandModel");
 const Feature = require("../../model/featureModel");
 const CarrierType = require("../../model/carrierTypeModel");
 
-dotenv.config({ path: "./config.env" });
+// Resolve config.env relative to this file, not the cwd
+dotenv.config({ path: path.resolve(__dirname, '../../config.env') });
 
-const DB = process.env.DATABASE_LOCAL || 'mongodb://localhost:27017/smart_truck';
+// const DB = process.env.DATABASE_LOCAL || 'mongodb://localhost:27017/smart_truck';
+const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("DB connection successful!"));
+mongoose.connect(DB, {
+  // useNewUrlParser: true,
+}).then(() => console.log('Remote database connection successfull!')).catch(err => {
+  console.log("ERROR: " + err);
+});
+
 
 // Ethiopian Regions
 const regions = [

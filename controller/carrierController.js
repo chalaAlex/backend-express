@@ -21,7 +21,6 @@ exports.getAllCarriers = catchAsync(async (req, res) => {
     .sort()
     .limitFields()
     .paginate();
-
   const carrier = await feature.query.populate("company", "legalEntityName");
 
   res.status(200).json({
@@ -40,7 +39,7 @@ exports.createCarrier = catchAsync(async (req, res, next) => {
     req.body.documents ?? {};
 
   if (!vehicleRegistration || !tradeLicense || !ownerDigitalId) {
-    return next(
+    return next( 
       new AppError(
         'All three legal documents (vehicleRegistration, tradeLicense, ownerDigitalId) are required',
         400,
@@ -70,7 +69,7 @@ exports.createCarrier = catchAsync(async (req, res, next) => {
 // -------------------- GET carrier ----------------------//
 exports.getCarrier = catchAsync(async (req, res) => {
   const carrier = await Carrier.findById(req.params.id)
-    .populate("truckOwner", "firstName lastName phone ratingQuantity ratingAverage")
+    .populate("truckOwner", "firstName lastName phone ratingQuantity ratingAverage createdAt")
     .populate("company", "legalEntityName ratingAverage ratingQuantity");
 
   res.status(200).json({
@@ -188,10 +187,10 @@ exports.deleteCarrier = catchAsync(async (req, res, next) => {
 
 // --------------- make favourite carrier ----------------//
 exports.makeFavourite = catchAsync(async (req, res, next) => {
-  if (!req.body.id) req.body.id = req.params.id;
+  const id = req.params.id || (req.body && req.body.id);
 
   const carrierFavourite = await Carrier.findByIdAndUpdate(
-    req.body.id,
+    id,
     { isFavourite: true },
     { new: true, runValidators: true },
   );
@@ -213,10 +212,10 @@ exports.makeFavourite = catchAsync(async (req, res, next) => {
 
 // --------------- disable Favourite carrier -------------//
 exports.disableFavourite = catchAsync(async (req, res, next) => {
-  if (!req.body.id) req.body.id = req.params.id;
+  const id = req.params.id || (req.body && req.body.id);
 
   const carrierFavourite = await Carrier.findByIdAndUpdate(
-    req.body.id,
+    id,
     { isFavourite: false },
     { new: true, runValidators: true },
   );
@@ -236,12 +235,10 @@ exports.disableFavourite = catchAsync(async (req, res, next) => {
 
 // ---------------------- verify carrier -----------------//
 exports.verifyCarrier = catchAsync(async (req, res, next) => {
-  if (!req.body.id) req.body.id = req.params.id;
-
-  console.log(req.body.id);
+  const id = req.params.id || (req.body && req.body.id);
 
   const carrier = await Carrier.findByIdAndUpdate(
-    req.body.id,
+    id,
     { isVerified: true },
     { new: true, runValidators: true },
   );
@@ -263,10 +260,10 @@ exports.verifyCarrier = catchAsync(async (req, res, next) => {
 
 // -------------------- unverify carrier -----------------//
 exports.unverifyCarrier = catchAsync(async (req, res, next) => {
-  if (!req.body.id) req.body.id = req.params.id;
+  const id = req.params.id || (req.body && req.body.id);
 
   const carrier = await Carrier.findByIdAndUpdate(
-    req.body.id,
+    id,
     { isVerified: false },
     { new: true, runValidators: true },
   );

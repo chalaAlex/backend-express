@@ -1,33 +1,50 @@
-const Location = require("./../model/locationModel");
+const Region = require("./../model/regionModel");
+const City = require("./../model/cityModel");
 const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 
+// Returns all active regions with their city names embedded —
+// matches the { region: String, city: Array } shape the Flutter app expects.
 exports.getAllLocation = catchAsync(async (req, res) => {
-  const feature = new APIFeatures(Location.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate(); // Method Chaining
+  const regions = await Region.find({ isActive: true }).sort("name").lean();
 
-  const location = await feature.query;
+  const regionIds = regions.map((r) => r._id);
+  const cities = await City.find({
+    region: { $in: regionIds },
+    isActive: true,
+  })
+    .select("name region")
+    .lean();
+
+  // Group city names by region id
+  const cityMap = {};
+  for (const city of cities) {
+    const key = city.region.toString();
+    if (!cityMap[key]) cityMap[key] = [];
+    cityMap[key].push(city.name);
+  }
+
+  const data = regions.map((r) => ({
+    _id: r._id,
+    region: r.name,
+    city: cityMap[r._id.toString()] ?? [],
+  }));
 
   res.status(200).json({
     statusCode: 200,
-    message: "Successfully retrived all location",
-    total: location.length,
-    data: location,
+    message: "Successfully retrieved all locations",
+    total: data.length,
+    data,
   });
 });
 
 exports.createLocation = catchAsync(async (req, res) => {
-  console.log(req.body);
+  // Legacy — kept for backward compatibility
+  const Location = require("./../model/locationModel");
   const newLocation = await Location.create(req.body);
-  console.log(newLocation);
   res.status(201).json({
     statusCode: 201,
     message: "Successfully created location",
-    data: {
-      location: newLocation,
-    },
+    data: { location: newLocation },
   });
 });

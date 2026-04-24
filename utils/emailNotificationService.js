@@ -14,6 +14,18 @@ const TEMPLATES = {
     subject: "Carrier Verified",
     message: `Your carrier with plate number ${carrier.plateNumber} (${carrier.model}) has been verified and approved. It is now available for use.`,
   }),
+  "payment.confirmed": ({ payment, carrier, freight }) => ({
+    subject: "Payment Received — Start Shipping",
+    message:
+      `Dear ${carrier?.firstName ?? 'Carrier'},\n\n` +
+      `A payment of ETB ${payment.totalAmount?.toFixed(2)} has been confirmed for your shipment.\n\n` +
+      `Route: ${freight?.route?.pickup?.city ?? '—'} → ${freight?.route?.dropoff?.city ?? '—'}\n` +
+      `Pickup Date: ${freight?.schedule?.pickupDate ? new Date(freight.schedule.pickupDate).toDateString() : '—'}\n\n` +
+      `Your earnings of ETB ${payment.carrierAmount?.toFixed(2)} are now held in escrow and will be ` +
+      `released to your wallet after delivery is confirmed.\n\n` +
+      `You are cleared to begin shipping. Please proceed to the pickup location.\n\n` +
+      `Smart Truck Platform`,
+  }),
 };
 
 /**
@@ -25,8 +37,13 @@ const TEMPLATES = {
  * @returns {Promise<object|null>} - the owner user object, or null if not found
  */
 async function resolveRecipient(payload) {
+  // payment.confirmed passes a User doc directly as `carrier`
+  if (payload.carrier && payload.carrier.email) {
+    return payload.carrier;
+  }
+
   const { carrier } = payload;
-  const truckOwner = carrier.truckOwner;
+  const truckOwner = carrier?.truckOwner;
 
   if (truckOwner && typeof truckOwner === "object" && truckOwner.email) {
     return truckOwner;
