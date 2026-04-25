@@ -156,6 +156,22 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
   // 2. Freight → IN_TRANSIT
   await Freight.findByIdAndUpdate(payment.freightId, { status: 'IN_TRANSIT' });
 
+  // 2b. ShipmentRequest → IN_TRANSIT (if bookingType is REQUEST)
+  if (payment.bookingType === 'REQUEST') {
+    try {
+      const shipmentRequest = await ShipmentRequest.findByIdAndUpdate(
+        payment.sourceId,
+        { status: 'IN_TRANSIT' },
+        { new: true }
+      );
+      if (!shipmentRequest) {
+        console.warn(`[confirmPayment] ShipmentRequest not found for sourceId: ${payment.sourceId}`);
+      }
+    } catch (err) {
+      console.warn(`[confirmPayment] Failed to update ShipmentRequest to IN_TRANSIT:`, err.message);
+    }
+  }
+
   // 3. Credit carrier's pending wallet balance
   const wallet = await Wallet.findOneAndUpdate(
     { carrierOwnerId: payment.carrierOwnerId },

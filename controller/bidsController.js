@@ -7,6 +7,8 @@ const Freight = require("../model/freightModel");
 const Carrier = require("../model/carrierModel");
 const filterObj = require("../utils/filterObj");
 const { createNotification } = require("../controller/notificationController");
+const { notify } = require("../utils/emailNotificationService");
+const User = require("../model/userModel");
 
 // --------------------------- GET MY BIDS (carrier owner) -----------------------//
 exports.getMyBids = catchAsync(async (req, res) => {
@@ -190,6 +192,27 @@ exports.acceptBid = catchAsync(async (req, res, next) => {
   bid.status = "ACCEPTED";
   await bid.save();
 
+  // Fetch carrier owner user for notifications
+  const carrierOwner = await User.findById(bid.carrierOwnerId);
+
+  // Create in-app notification for BID_ACCEPTED
+  const io = req.app.get('io');
+  await createNotification(
+    bid.carrierOwnerId,
+    'BID_ACCEPTED',
+    bid._id,
+    'Bid Accepted',
+    'Congratulations! Your bid has been accepted.',
+    io
+  );
+
+  // Send email notification (non-blocking)
+  try {
+    await notify('bid.accepted', { bid: await bid.populate('freightId'), user: carrierOwner });
+  } catch (err) {
+    console.error('Failed to send bid.accepted email:', err);
+  }
+
   // Mark freight as BOOKED
   freight.status = "BOOKED";
   await freight.save();
@@ -199,6 +222,30 @@ exports.acceptBid = catchAsync(async (req, res, next) => {
     { freightId: bid.freightId, status: "PENDING", _id: { $ne: bid._id } },
     { status: "REJECTED" },
   );
+
+  // Notify each auto-rejected carrier owner
+  if (autoRejected.modifiedCount > 0) {
+    const autoRejectedBids = await Bids.find({
+      freightId: bid.freightId,
+      status: "REJECTED",
+      _id: { $ne: bid._id }
+    });
+
+    for (const rejectedBid of autoRejectedBids) {
+      try {
+        await createNotification(
+          rejectedBid.carrierOwnerId,
+          'BID_REJECTED',
+          rejectedBid._id,
+          'Bid Rejected',
+          'Your bid was not accepted. The freight has been booked by another carrier.',
+          io
+        );
+      } catch (err) {
+        console.error(`Failed to create BID_REJECTED notification for bid ${rejectedBid._id}:`, err);
+      }
+    }
+  }
 
   res.status(200).json({
     statusCode: 200,
@@ -234,6 +281,27 @@ exports.rejectBid = catchAsync(async (req, res, next) => {
 
   bid.status = "REJECTED";
   await bid.save();
+
+  // Fetch carrier owner user for notifications
+  const carrierOwner = await User.findById(bid.carrierOwnerId);
+
+  // Create in-app notification for BID_REJECTED
+  const io = req.app.get('io');
+  await createNotification(
+    bid.carrierOwnerId,
+    'BID_REJECTED',
+    bid._id,
+    'Bid Rejected',
+    'Your bid was not accepted by the freight owner.',
+    io
+  );
+
+  // Send email notification (non-blocking)
+  try {
+    await notify('bid.rejected', { bid: await bid.populate('freightId'), user: carrierOwner });
+  } catch (err) {
+    console.error('Failed to send bid.rejected email:', err);
+  }
 
   res.status(200).json({
     statusCode: 200,

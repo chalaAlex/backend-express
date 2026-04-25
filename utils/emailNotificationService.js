@@ -26,17 +26,80 @@ const TEMPLATES = {
       `You are cleared to begin shipping. Please proceed to the pickup location.\n\n` +
       `Smart Truck Platform`,
   }),
+  "bid.accepted": ({ bid, user }) => ({
+    subject: "Bid Accepted — Prepare for Shipment",
+    message:
+      `Dear ${user?.firstName ?? 'Carrier'},\n\n` +
+      `Congratulations! Your bid of ETB ${bid.bidAmount?.toFixed(2)} has been accepted.\n\n` +
+      `Route: ${bid.freightId?.route?.pickup?.city ?? '—'} → ${bid.freightId?.route?.dropoff?.city ?? '—'}\n` +
+      `Pickup Date: ${bid.freightId?.schedule?.pickupDate ? new Date(bid.freightId.schedule.pickupDate).toDateString() : '—'}\n\n` +
+      `Next Steps:\n` +
+      `- Wait for the freight owner to confirm payment\n` +
+      `- Once payment is confirmed, you will be notified to begin shipping\n` +
+      `- Proceed to the pickup location on the scheduled date\n\n` +
+      `Smart Truck Platform`,
+  }),
+  "bid.rejected": ({ bid, user }) => ({
+    subject: "Bid Not Accepted",
+    message:
+      `Dear ${user?.firstName ?? 'Carrier'},\n\n` +
+      `Unfortunately, your bid of ETB ${bid.bidAmount?.toFixed(2)} was not accepted.\n\n` +
+      `Freight Reference: ${bid.freightId?._id ?? '—'}\n` +
+      `Route: ${bid.freightId?.route?.pickup?.city ?? '—'} → ${bid.freightId?.route?.dropoff?.city ?? '—'}\n\n` +
+      `Thank you for your interest. We encourage you to bid on other available freight.\n\n` +
+      `Smart Truck Platform`,
+  }),
+  "shipment_request.accepted": ({ request, user }) => ({
+    subject: "Shipment Request Accepted",
+    message:
+      `Dear ${user?.firstName ?? 'Freight Owner'},\n\n` +
+      `Great news! Your shipment request has been accepted.\n\n` +
+      `Request Reference: ${request._id ?? '—'}\n` +
+      `Carrier: ${request.carrierOwnerId?.firstName ?? '—'} ${request.carrierOwnerId?.lastName ?? ''}\n` +
+      `Route: ${request.freightId?.route?.pickup?.city ?? '—'} → ${request.freightId?.route?.dropoff?.city ?? '—'}\n\n` +
+      `Next Steps:\n` +
+      `- Proceed to confirm payment to begin the shipment\n` +
+      `- The carrier will be notified once payment is confirmed\n\n` +
+      `Smart Truck Platform`,
+  }),
+  "shipment_request.rejected": ({ request, user }) => ({
+    subject: "Shipment Request Declined",
+    message:
+      `Dear ${user?.firstName ?? 'Freight Owner'},\n\n` +
+      `Unfortunately, your shipment request was not accepted by the carrier.\n\n` +
+      `Request Reference: ${request._id ?? '—'}\n\n` +
+      `We encourage you to send requests to other available carriers or post your freight for bidding.\n\n` +
+      `Smart Truck Platform`,
+  }),
+  "payment.released": ({ payment, carrier, freight }) => ({
+    subject: "Payment Released to Your Wallet",
+    message:
+      `Dear ${carrier?.firstName ?? 'Carrier'},\n\n` +
+      `Great news! Your payment has been released from escrow.\n\n` +
+      `Released Amount: ETB ${payment.carrierAmount?.toFixed(2)}\n` +
+      `Route: ${freight?.route?.pickup?.city ?? '—'} → ${freight?.route?.dropoff?.city ?? '—'}\n` +
+      `Pickup Date: ${freight?.schedule?.pickupDate ? new Date(freight.schedule.pickupDate).toDateString() : '—'}\n\n` +
+      `The funds are now available in your wallet.\n\n` +
+      `Smart Truck Platform`,
+  }),
 };
 
 /**
- * Resolves the carrier owner from the payload.
- * If truckOwner is already populated (object with email), returns it directly.
- * Otherwise queries the User model by ObjectId.
+ * Resolves the recipient user from the payload.
+ * Handles multiple payload structures:
+ * - payment.confirmed: passes User doc as `carrier`
+ * - carrier events: passes carrier doc with truckOwner
+ * - bid events: passes User doc as `user`
  *
- * @param {object} payload - event payload containing a carrier document
- * @returns {Promise<object|null>} - the owner user object, or null if not found
+ * @param {object} payload - event payload
+ * @returns {Promise<object|null>} - the recipient user object, or null if not found
  */
 async function resolveRecipient(payload) {
+  // bid events pass a User doc directly as `user`
+  if (payload.user && payload.user.email) {
+    return payload.user;
+  }
+
   // payment.confirmed passes a User doc directly as `carrier`
   if (payload.carrier && payload.carrier.email) {
     return payload.carrier;

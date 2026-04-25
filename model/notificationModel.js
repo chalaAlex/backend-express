@@ -11,7 +11,15 @@ const notificationSchema = new Schema(
 
     type: {
       type: String,
-      enum: ["BID_RECEIVED", "SHIPMENT_REQUEST_RECEIVED"],
+      enum: [
+        "BID_RECEIVED",
+        "SHIPMENT_REQUEST_RECEIVED",
+        "BID_ACCEPTED",
+        "BID_REJECTED",
+        "SHIPMENT_REQUEST_ACCEPTED",
+        "SHIPMENT_REQUEST_REJECTED",
+        "PAYMENT_RELEASED",
+      ],
       required: true,
     },
 

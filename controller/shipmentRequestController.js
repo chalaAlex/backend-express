@@ -6,6 +6,7 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const { createNotification } = require("./notificationController");
+const { notify } = require("../utils/emailNotificationService");
 
 // --------------------------- CREATE REQUEST -----------------------//
 exports.createRequests = catchAsync(async (req, res, next) => {
@@ -214,6 +215,29 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
   request.status = "ACCEPTED";
   await request.save();
 
+  // Send in-app notification and email to freight owner
+  const io = req.app.get('io');
+  const freightOwner = await User.findById(request.freightOwnerId);
+  
+  createNotification(
+    request.freightOwnerId,
+    'SHIPMENT_REQUEST_ACCEPTED',
+    request._id,
+    'Shipment Request Accepted',
+    'Your shipment request has been accepted by the carrier.',
+    io
+  );
+
+  // Send email notification (non-blocking)
+  // Populate request for email template
+  await request.populate('freightIds carrierOwnerId');
+  
+  try {
+    await notify('shipment_request.accepted', { request, user: freightOwner });
+  } catch (err) {
+    console.error('Failed to send shipment request accepted email:', err);
+  }
+
   // Update freight status to BOOKED
   freight.status = "BOOKED";
   await freight.save();
@@ -227,6 +251,30 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
     },
     { status: "REJECTED" },
   );
+
+  // Notify each auto-rejected freight owner
+  if (autoRejectedResult.modifiedCount > 0) {
+    const autoRejectedRequests = await ShipmentRequest.find({
+      freightIds: request.freightIds,
+      status: "REJECTED",
+      _id: { $ne: requestId }
+    });
+
+    for (const rejectedRequest of autoRejectedRequests) {
+      try {
+        await createNotification(
+          rejectedRequest.freightOwnerId,
+          'SHIPMENT_REQUEST_REJECTED',
+          rejectedRequest._id,
+          'Shipment Request Rejected',
+          'Your shipment request was not accepted. The freight has been booked by another carrier.',
+          io
+        );
+      } catch (err) {
+        console.error(`Failed to create SHIPMENT_REQUEST_REJECTED notification for request ${rejectedRequest._id}:`, err);
+      }
+    }
+  }
 
   res.status(200).json({
     statusCode: 200,
@@ -271,6 +319,30 @@ exports.rejectRequest = catchAsync(async (req, res, next) => {
   // Update status to REJECTED
   request.status = "REJECTED";
   await request.save();
+
+  // Fetch freight owner user for notifications
+  const freightOwner = await User.findById(request.freightOwnerId);
+
+  // Create in-app notification for SHIPMENT_REQUEST_REJECTED
+  const io = req.app.get('io');
+  await createNotification(
+    request.freightOwnerId,
+    'SHIPMENT_REQUEST_REJECTED',
+    request._id,
+    'Shipment Request Rejected',
+    'Your shipment request was not accepted by the carrier.',
+    io
+  );
+
+  // Send email notification (non-blocking)
+  // Populate request for email template
+  await request.populate('freightIds carrierOwnerId');
+  
+  try {
+    await notify('shipment_request.rejected', { request, user: freightOwner });
+  } catch (err) {
+    console.error('Failed to send shipment request rejected email:', err);
+  }
 
   res.status(200).json({
     statusCode: 200,
