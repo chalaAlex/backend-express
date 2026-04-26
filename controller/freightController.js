@@ -74,6 +74,7 @@ exports.getMyFreights = catchAsync(async (req, res) => {
 exports.updateFreight = catchAsync(async (req, res) => {
   const freight = await Freight.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
+    runValidators: true,
   });
   res.status(200).json({
     statusCode: 200,
@@ -81,6 +82,33 @@ exports.updateFreight = catchAsync(async (req, res) => {
     data: {
       freight,
     },
+  });
+});
+
+// --------------- FEATURE / UNFEATURE FREIGHT ---------------//
+exports.featureFreight = catchAsync(async (req, res) => {
+  const freight = await Freight.findByIdAndUpdate(
+    req.params.id,
+    { isFeatured: true },
+    { new: true }
+  );
+  res.status(200).json({
+    statusCode: 200,
+    message: "Freight marked as featured",
+    data: { freight },
+  });
+});
+
+exports.unfeatureFreight = catchAsync(async (req, res) => {
+  const freight = await Freight.findByIdAndUpdate(
+    req.params.id,
+    { isFeatured: false },
+    { new: true }
+  );
+  res.status(200).json({
+    statusCode: 200,
+    message: "Freight removed from featured",
+    data: { freight },
   });
 });
 

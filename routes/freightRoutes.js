@@ -6,8 +6,7 @@ const bidRouter = require("./bidsRouter");
 
 const router = express.Router();
 
-router.use("/:freightId/bids", bidRouter);
-
+// ── Static routes first (before any param routes) ──────
 router
   .route("/my-freights")
   .get(authController.protect, freightController.getMyFreights);
@@ -15,8 +14,30 @@ router
 router
   .route("/")
   .get(authController.protect, freightController.getAllFreights)
-  .post(authController.protect, authController.restrictTo("freight_owner"), freightController.createFreight);
+  .post(
+    authController.protect,
+    authController.restrictTo("freight_owner", "admin"),
+    freightController.createFreight
+  );
 
+// ── Feature / unfeature (before /:id to avoid conflict) ─
+router
+  .route("/:id/feature")
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin"),
+    freightController.featureFreight,
+  );
+
+router
+  .route("/:id/unfeature")
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin"),
+    freightController.unfeatureFreight,
+  );
+
+// ── Generic param route ────────────────────────────────
 router
   .route("/:id")
   .get(authController.protect, freightController.getFreight)
@@ -26,6 +47,9 @@ router
     authController.restrictTo("admin"),
     freightController.deleteFreight,
   );
+
+// ── Bids sub-router (after param routes) ──────────────
+router.use("/:freightId/bids", bidRouter);
 
 router
   .route("/:freightId/bids")
