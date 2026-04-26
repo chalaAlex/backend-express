@@ -9,7 +9,7 @@ const releasePaymentService = require('./services/releasePaymentService');
 dotenv.config({ path: './config.env' });
 
 // -------------------- Connect to Remote Hosted DataBase ---------------------- //
-// const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
+const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 
 mongoose.connect(DB, {
   // useNewUrlParser: true,
