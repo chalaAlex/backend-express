@@ -18,7 +18,7 @@ router
   .get(authController.protect, carrierController.getAllCarriers)
   .post(
     authController.protect,
-    authController.restrictTo("carrier_owner"),
+    authController.restrictTo("carrier_owner", "admin"),
     carrierController.createCarrier,
   );
 

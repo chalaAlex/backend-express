@@ -110,7 +110,8 @@ exports.getDriver = catchAsync(async (req, res, next) => {
     return next(new AppError("Driver not found", 404));
   }
 
-  if (driver.carrierOwner.toString() !== req.user.id) {
+  // Allow admin to view any driver, carrier_owner can only view their own
+  if (req.user.role !== 'admin' && driver.carrierOwner.toString() !== req.user.id) {
     return next(new AppError('You do not have permission to access this driver', 403));
   }
 
@@ -137,7 +138,8 @@ exports.updateDriver = catchAsync(async (req, res, next) => {
     return next(new AppError("Driver not found", 404));
   }
 
-  if (driver.carrierOwner.toString() !== req.user.id) {
+  // Allow admin to update any driver, carrier_owner can only update their own
+  if (req.user.role !== 'admin' && driver.carrierOwner.toString() !== req.user.id) {
     return next(new AppError('You do not have permission to access this driver', 403));
   }
 
@@ -204,7 +206,8 @@ exports.deleteDriver = catchAsync(async (req, res, next) => {
     return next(new AppError("Driver not found", 404));
   }
 
-  if (driver.carrierOwner.toString() !== req.user.id) {
+  // Allow admin to delete any driver, carrier_owner can only delete their own
+  if (req.user.role !== 'admin' && driver.carrierOwner.toString() !== req.user.id) {
     return next(new AppError('You do not have permission to access this driver', 403));
   }
 

@@ -35,7 +35,11 @@ router
 // Routes that require ID parameter
 router
   .route("/:id")
-  .get(authController.protect, driverController.getDriver)
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "carrier_owner"),
+    driverController.getDriver
+  )
   .patch(
     authController.protect,
     authController.restrictTo("admin", "carrier_owner"),

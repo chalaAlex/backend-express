@@ -11,11 +11,11 @@ router.post(
   requestController.createRequests,
 );
 
-// Get sent shipment requests (freight owners)
+// Get sent shipment requests (freight owners and admin)
 router.get(
   "/sent",
   authController.protect,
-  authController.restrictTo("freight_owner"),
+  authController.restrictTo("freight_owner", "admin"),
   requestController.getSentRequests,
 );
 
