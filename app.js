@@ -27,6 +27,7 @@ const notificationRouter = require("./routes/notificationRoutes");
 const paymentRouter = require("./routes/paymentRoutes");
 const walletRouter = require("./routes/walletRoutes");
 const adminPaymentRouter = require("./routes/adminPaymentRoutes");
+const aiRouter = require("./routes/aiRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -61,6 +62,7 @@ app.use("/api/v1/notifications", notificationRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/wallet", walletRouter);
 app.use("/api/v1/admin", adminPaymentRouter);
+app.use("/api/v1/ai", aiRouter);
 app.use("/api", distanceRouter);
 
 // Global error handler — must be last

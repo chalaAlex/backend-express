@@ -104,8 +104,17 @@ exports.initiatePayment = catchAsync(async (req, res, next) => {
   }
 
   const { freightId, carrierOwnerId, totalAmount } = booking;
-  const platformFee = parseFloat((totalAmount * 0.1).toFixed(2));
-  const carrierAmount = parseFloat((totalAmount * 0.9).toFixed(2));
+
+  // ── New fee model ──────────────────────────────────────────────────────────
+  // agreedPrice   = totalAmount  (what carrier expects to receive)
+  // platformFee   = 10% of agreedPrice (added ON TOP, charged to freight owner)
+  // freightOwnerPays = agreedPrice + platformFee (= 110% of agreedPrice)
+  // carrierAmount = agreedPrice  (carrier receives 100% of agreed price)
+  const agreedPrice        = totalAmount;
+  const platformFee        = parseFloat((agreedPrice * 0.1).toFixed(2));
+  const carrierAmount      = agreedPrice;
+  const freightOwnerPays   = parseFloat((agreedPrice + platformFee).toFixed(2));
+
   const outTradeNo = `TRD-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 
   const payment = await Payment.create({
@@ -115,9 +124,9 @@ exports.initiatePayment = catchAsync(async (req, res, next) => {
     freightId,
     freightOwnerId: req.user._id,
     carrierOwnerId,
-    totalAmount,
-    platformFee,
-    carrierAmount,
+    totalAmount: freightOwnerPays,   // what freight owner actually pays (110%)
+    platformFee,                      // 10% of agreed price
+    carrierAmount,                    // 100% of agreed price → goes to carrier
     gateway,
     status: 'PENDING',
   });

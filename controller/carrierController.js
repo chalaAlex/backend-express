@@ -83,7 +83,12 @@ exports.getCarrier = catchAsync(async (req, res) => {
 
 // --------------- GET Featured carrier ------------------//
 exports.getFeatured = catchAsync(async (req, res) => {
-  const featuredCarrier = await Carrier.find({ isFeatured: true });
+  // Query both isFeatured and isFavourite for backwards compatibility
+  const featuredCarrier = await Carrier.find({
+    $or: [{ isFeatured: true }, { isFavourite: true }]
+  })
+    .populate("truckOwner", "firstName lastName phone ratingAverage ratingQuantity")
+    .populate("company", "legalEntityName ratingAverage ratingQuantity");
 
   res.status(200).json({
     statusCode: 200,
@@ -189,23 +194,21 @@ exports.deleteCarrier = catchAsync(async (req, res, next) => {
 exports.makeFavourite = catchAsync(async (req, res, next) => {
   const id = req.params.id || (req.body && req.body.id);
 
-  const carrierFavourite = await Carrier.findByIdAndUpdate(
+  const carrier = await Carrier.findByIdAndUpdate(
     id,
-    { isFavourite: true },
+    { isFeatured: true, isFavourite: true },
     { new: true, runValidators: true },
   );
 
-  console.log(carrierFavourite);
-
-  if (!carrierFavourite) {
+  if (!carrier) {
     return next(new AppError("No carrier is found with that id", 404));
   }
 
   res.status(200).json({
     statusCode: 200,
-    message: "Carrier marked as favourite",
+    message: "Carrier marked as featured",
     data: {
-      carrier: carrierFavourite,
+      carrier,
     },
   });
 });
@@ -214,21 +217,21 @@ exports.makeFavourite = catchAsync(async (req, res, next) => {
 exports.disableFavourite = catchAsync(async (req, res, next) => {
   const id = req.params.id || (req.body && req.body.id);
 
-  const carrierFavourite = await Carrier.findByIdAndUpdate(
+  const carrier = await Carrier.findByIdAndUpdate(
     id,
-    { isFavourite: false },
+    { isFeatured: false, isFavourite: false },
     { new: true, runValidators: true },
   );
 
-  if (!carrierFavourite) {
+  if (!carrier) {
     return next(new AppError("No carrier is found with that id", 404));
   }
 
   res.status(200).json({
     statusCode: 200,
-    message: "Carrier removed from favourite",
+    message: "Carrier removed from featured",
     data: {
-      carrier: carrierFavourite,
+      carrier,
     },
   });
 });

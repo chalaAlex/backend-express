@@ -3,15 +3,9 @@ const carrierController = require("../controller/carrierController");
 const authController = require("../controller/authController");
 const router = express.Router({ mergeParams: true });
 
-router.get("/my-carriers", authController.protect, carrierController.getMyCarriers);
-
-router
-  .route("/:id/makeFavourite")
-  .patch(authController.protect, carrierController.makeFavourite);
-
-router
-  .route("/:id/disableFavourite")
-  .patch(authController.protect, carrierController.disableFavourite);
+// ── Static routes FIRST (must be before /:id) ─────────
+router.get("/my-carriers",      authController.protect, carrierController.getMyCarriers);
+router.get("/getFeaturedCarier", authController.protect, carrierController.getFeatured);
 
 router
   .route("/")
@@ -22,27 +16,14 @@ router
     carrierController.createCarrier,
   );
 
+// ── Param routes ───────────────────────────────────────
 router
-  .route("/getFeaturedCarier")
-  .get(authController.protect, carrierController.getFeatured);
+  .route("/:id/makeFavourite")
+  .patch(authController.protect, carrierController.makeFavourite);
 
 router
-  .route("/:companyId/assign-carrier/:carrierId")
-  .patch(
-    authController.protect,
-    authController.restrictTo("carrier_owner"),
-    carrierController.assignCarrierToCompany,
-  );
-
-router
-  .route("/:id")
-  .get(authController.protect, carrierController.getCarrier)
-  .patch(authController.protect, carrierController.updateCarrier)
-  .delete(
-    authController.protect,
-    authController.restrictTo("admin"),
-    carrierController.deleteCarrier,
-  );
+  .route("/:id/disableFavourite")
+  .patch(authController.protect, carrierController.disableFavourite);
 
 router
   .route("/:id/verifyCarrier")
@@ -61,6 +42,14 @@ router
   );
 
 router
+  .route("/:companyId/assign-carrier/:carrierId")
+  .patch(
+    authController.protect,
+    authController.restrictTo("carrier_owner"),
+    carrierController.assignCarrierToCompany,
+  );
+
+router
   .route("/:carrierId/assign-driver/:driverId")
   .patch(
     authController.protect,
@@ -74,6 +63,16 @@ router
     authController.protect,
     authController.restrictTo("admin", "carrier_owner"),
     carrierController.removeDriverFromCarrier,
+  );
+
+router
+  .route("/:id")
+  .get(authController.protect, carrierController.getCarrier)
+  .patch(authController.protect, carrierController.updateCarrier)
+  .delete(
+    authController.protect,
+    authController.restrictTo("admin"),
+    carrierController.deleteCarrier,
   );
 
 module.exports = router;
