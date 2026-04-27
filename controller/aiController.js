@@ -11,7 +11,7 @@ const getModel = () => {
     throw new AppError('GEMINI_API_KEY is not configured in config.env', 500);
   }
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  return genAI.getGenerativeModel({ model: 'gemini-3-flash-preview'});
+  return genAI.getGenerativeModel({ model:'gemini-2.5-flash'});
 };
 
 exports.improveFreightDescription = catchAsync(async (req, res, next) => {
