@@ -12,7 +12,7 @@ const CargoSchema = new mongoose.Schema(
     },
     weightKg: {
       type: Number,
-      required: true,
+      // required: true,
     },
     quantity: {
       type: Number,
@@ -79,11 +79,11 @@ const ScheduleSchema = new mongoose.Schema(
 const TruckRequirementSchema = new mongoose.Schema(
   {
     type: {
-      type: String,
+      type: [String],
       enum: ["FLATBED", "BOX", "REFRIGERATED", "TANKER", "LOWBED"],
-      required: true,
+      default: [],
     },
-    minCapacityKg: { type: Number, required: true },
+    minCapacityKg: { type: Number },
   },
   { _id: false },
 );

@@ -19,11 +19,19 @@ router
 // ── Param routes ───────────────────────────────────────
 router
   .route("/:id/makeFavourite")
-  .patch(authController.protect, carrierController.makeFavourite);
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin"),
+    carrierController.makeFavourite,
+  );
 
 router
   .route("/:id/disableFavourite")
-  .patch(authController.protect, carrierController.disableFavourite);
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin"),
+    carrierController.disableFavourite,
+  );
 
 router
   .route("/:id/verifyCarrier")

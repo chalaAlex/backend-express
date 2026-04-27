@@ -85,7 +85,7 @@ exports.getCarrier = catchAsync(async (req, res) => {
 exports.getFeatured = catchAsync(async (req, res) => {
   // Query both isFeatured and isFavourite for backwards compatibility
   const featuredCarrier = await Carrier.find({
-    $or: [{ isFeatured: true }, { isFavourite: true }]
+    $or: [{ isFeatured: true }]
   })
     .populate("truckOwner", "firstName lastName phone ratingAverage ratingQuantity")
     .populate("company", "legalEntityName ratingAverage ratingQuantity");
