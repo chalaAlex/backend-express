@@ -5,7 +5,7 @@ const CargoSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      required: true,
+      // required: true,
     },
     description: {
       type: String,
@@ -92,7 +92,7 @@ const PricingSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ["FIXED", "NEGOTIABLE"],
+      enum: ["FIXED", "Negotiable"],
       required: true,
     },
     amount: { type: Number },
